@@ -1,6 +1,9 @@
 #include <stdio.h>
+#include <stdlib.h>
 
-static char input[2048];
+#include <readline/readline.h>
+#include <readline/history.h>
+
 
 int main(int argc, char** argv)
 {
@@ -8,9 +11,11 @@ int main(int argc, char** argv)
 	puts("Press Ctrl-C to exit...\n");
 
 	while(1) {
-		fputs("jisp>",stdout);
-		fgets(input, 2048, stdin);
-		printf("No you're a %s",input);
+		char* input = readline("jisp> ");
+		add_history(input);
+
+		printf("No you're a %s\n",input);
+		free(input);
 	}
 
 	return 0;
