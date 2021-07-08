@@ -6,7 +6,6 @@
 
 #include "mpc.h"
 
-static char buffer[2048];
 
 enum {
 	LERR_DIV_ZERO,
