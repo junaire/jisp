@@ -10,5 +10,6 @@ We need install `libedit` first.
 ```
 gcc jisp.c mpc.c -o jisp -I. -g -ledit
 ```
-
+# Reference
+[build your own lisp](http://buildyourownlisp.com/contents)
 
