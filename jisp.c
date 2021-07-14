@@ -219,7 +219,7 @@ lval* lval_copy(lval* v)
 			x->count = v->count;
 			x->cell = malloc(sizeof(lval*) * v->count);
 			for (int i = 0; i < x->count; i++) {
-				x->cell[i] = v->cell[i];
+				x->cell[i] = lval_copy(v->cell[i]);
 			}
 			break;
 	}
@@ -492,12 +492,8 @@ lval* builtin_list(lenv* e, lval* a)
 lval* lval_eval(lenv* e, lval*);
 lval* builtin_eval(lenv* e, lval* a)
 {
-	LASSERT(a, a->count == 1,
-			"Too much arguments!"
-		   );
-	LASSERT(a, a->cell[0]->type == LVAL_QEXPR,
-			"arguments type error!"
-		   );
+	LASSERT_NUM("eval", a, 1);
+	LASSERT_TYPE("eval", a, 0, LVAL_QEXPR);
 	lval* x = lval_take(a, 0);
 	x->type = LVAL_SEXPR;
 	return lval_eval(e, x);
@@ -700,13 +696,17 @@ lval* lval_eval_sexpr(lenv* e, lval* v)
 	if (v->count == 0)
 		return v;
 	if (v->count == 1)
-		return lval_take(v, 0);
+		lval_eval(e, lval_take(v, 0)); 
 
 	lval* f = lval_pop(v, 0);
 	if (f->type != LVAL_FUN) {
+    lval* err = lval_err(
+      "S-Expression starts with incorrect type. "
+      "Got %s, Expected %s.",
+      ltype_name(f->type), ltype_name(LVAL_FUN));
 		lval_del(f);
 		lval_del(v);
-		return lval_err("first element is not a function!");
+		return err;
 	}
 	//core logic
 	lval* res = lval_call(e, f, v);
