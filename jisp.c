@@ -635,9 +635,9 @@ int lval_eq(lval* x, lval* y)
 lval* builtin_cmp(lenv* e,lval* a, char* op)
 {
 	int res;
-	if (strcmp(op, "=="))
+	if (strcmp(op, "==") == 0)
 		res = lval_eq(a->cell[0], a->cell[1]);
-	if (strcmp(op, "!="))
+	if (strcmp(op, "!=") == 0)
 		res = !lval_eq(a->cell[0], a->cell[1]);
 	return lval_num(res);
 }
@@ -654,6 +654,22 @@ lval* builtin_ne(lenv* e, lval* a)
 lval* builtin_put(lenv* e, lval* a)
 {
 	return builtin_var(e, a, "=");
+}
+
+lval* builtin_if(lenv* e, lval* a)
+{
+	lval* x;
+	a->cell[1]->type = LVAL_SEXPR;
+	a->cell[2]->type = LVAL_QEXPR;
+
+	if (a->cell[0]->num) {
+		x = lval_eval(e, lval_pop(a, 1));
+	}else {
+		x = lval_eval(e, lval_pop(a, 2));
+	}
+	lval_del(a);
+	return x;
+
 }
 
 lval* builtin_def(lenv* e, lval* a)
@@ -688,6 +704,7 @@ void lenv_add_builtins(lenv* e)
 	lenv_add_builtin(e,"=",builtin_le);
 	lenv_add_builtin(e,"==",builtin_eq);
 	lenv_add_builtin(e,"!=",builtin_ne);
+	lenv_add_builtin(e,"if",builtin_if);
 }
 
 lval* lval_call(lenv* e, lval* f, lval* a) {
