@@ -660,7 +660,7 @@ lval* builtin_if(lenv* e, lval* a)
 {
 	lval* x;
 	a->cell[1]->type = LVAL_SEXPR;
-	a->cell[2]->type = LVAL_QEXPR;
+	a->cell[2]->type = LVAL_SEXPR;
 
 	if (a->cell[0]->num) {
 		x = lval_eval(e, lval_pop(a, 1));
