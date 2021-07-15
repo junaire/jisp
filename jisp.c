@@ -563,6 +563,94 @@ lval* builtin_lambda(lenv* e, lval* a)
 	return lval_lambda(formals, body);
 }
 
+lval* builtin_ord(lenv* e, lval* a, char* op)
+{
+	LASSERT_NUM(op, a, 2);
+	LASSERT_TYPE(op, a, 0, LVAL_NUM);
+	LASSERT_TYPE(op, a, 1, LVAL_NUM);
+
+	int res;
+	if (strcmp(op, "<"))
+		res = a->cell[0]->num < a->cell[1]->num;
+	if (strcmp(op, "<"))
+		res = a->cell[0]->num > a->cell[1]->num;
+	if (strcmp(op, "<="))
+		res = a->cell[0]->num <= a->cell[1]->num;
+	if (strcmp(op, ">="))
+		res = a->cell[0]->num >= a->cell[1]->num;
+
+	lval_del(a);
+	return lval_num(res);	
+}
+
+lval* builtin_gt(lenv* e, lval* a)
+{
+	return builtin_ord(e, a, ">");
+}
+
+lval* builtin_lt(lenv* e, lval* a)
+{
+	return builtin_ord(e, a, "<");
+}
+lval* builtin_ge(lenv* e, lval* a)
+{
+	return builtin_ord(e, a, ">=");
+}
+lval* builtin_le(lenv* e, lval* a)
+{
+	return builtin_ord(e, a, "<=");
+}
+
+int lval_eq(lval* x, lval* y)
+{
+	if (x->type != y->type)
+		return 0;
+	switch (x->type) {
+		case LVAL_NUM:
+			return x->num == y->num;
+		case LVAL_SYM:
+			return (strcmp(x->sym, y->sym) == 0); 
+		case LVAL_ERR:
+			return (strcmp(x->err, y->err) == 0); 
+		case LVAL_FUN:
+			if (x->builtin || y->builtin) {
+				return x->builtin == y->builtin;
+			}else {
+				return lval_eq(x->formals, x->formals)
+					&& lval_eq(x->body, y->body);
+			}
+		case LVAL_QEXPR:
+		case LVAL_SEXPR:
+			if (x->count != y->count )
+				return 0;
+			for (int i = 0; i < x->count; i++) {
+				if (!lval_eq(x->cell[i], y->cell[i]))
+					return 0;
+			}
+			return 1;
+	}
+
+}
+
+lval* builtin_cmp(lenv* e,lval* a, char* op)
+{
+	int res;
+	if (strcmp(op, "=="))
+		res = lval_eq(a->cell[0], a->cell[1]);
+	if (strcmp(op, "!="))
+		res = !lval_eq(a->cell[0], a->cell[1]);
+	return lval_num(res);
+}
+
+lval* builtin_eq(lenv* e, lval* a)
+{
+	return builtin_cmp(e, a, "==");
+}
+
+lval* builtin_ne(lenv* e, lval* a)
+{
+	return builtin_cmp(e, a, "!=");
+}
 lval* builtin_put(lenv* e, lval* a)
 {
 	return builtin_var(e, a, "=");
@@ -594,6 +682,12 @@ void lenv_add_builtins(lenv* e)
 	lenv_add_builtin(e,"def",builtin_def);
 	lenv_add_builtin(e,"\\",builtin_lambda);
 	lenv_add_builtin(e,"=",builtin_put);
+	lenv_add_builtin(e,">",builtin_gt);
+	lenv_add_builtin(e,"<",builtin_lt);
+	lenv_add_builtin(e,">=",builtin_ge);
+	lenv_add_builtin(e,"=",builtin_le);
+	lenv_add_builtin(e,"==",builtin_eq);
+	lenv_add_builtin(e,"!=",builtin_ne);
 }
 
 lval* lval_call(lenv* e, lval* f, lval* a) {
@@ -700,10 +794,10 @@ lval* lval_eval_sexpr(lenv* e, lval* v)
 
 	lval* f = lval_pop(v, 0);
 	if (f->type != LVAL_FUN) {
-    lval* err = lval_err(
-      "S-Expression starts with incorrect type. "
-      "Got %s, Expected %s.",
-      ltype_name(f->type), ltype_name(LVAL_FUN));
+		lval* err = lval_err(
+				"S-Expression starts with incorrect type. "
+				"Got %s, Expected %s.",
+				ltype_name(f->type), ltype_name(LVAL_FUN));
 		lval_del(f);
 		lval_del(v);
 		return err;
