@@ -1,15 +1,19 @@
 # Jisp
 
-Jun 's own lisp.
+### a Lisp ineterpreter written in modern C++.
 
-This is a toy project to learn C.
+At first, it is a toy project to learn Compilation Principles and C language. 
+At that time, I just simply retyped the code from [build your own lisp](http://buildyourownlisp.com/contents)
 
-# Build
-We need install `libedit` first.
+But now, I decide to refactor the whole project, and completely rewrite it using modern C++. It's still in progress!
+
+## Build
 
 ```
-gcc jisp.c mpc.c -o jisp -I. -g -ledit
+mkdir build && cd build
+
+cmake -G "Ninja"  -DCMAKE_BUILD_TYPE=Debug ../
+
+ninja
 ```
-# Reference
-[build your own lisp](http://buildyourownlisp.com/contents)
 
