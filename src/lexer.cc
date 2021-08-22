@@ -22,14 +22,16 @@ std::shared_ptr<BaseValue> Lexer::parse() {
         current = ast;
       } else {
         auto tmp = std::make_shared<Sexpr>(Types::SEXPR);
-        current->add(tmp);
+        dynamic_pointer_cast<Sexpr>(current)->add(tmp);
         current = tmp;
       }
 
     } else if (isNumber(token)) {
-      current->add(std::make_shared<Literal>(Types::NUMBER, token));
+      dynamic_pointer_cast<Sexpr>(current)->add(
+          std::make_shared<Literal>(Types::NUMBER, token));
     } else {
-      ast->add(std::make_shared<Symbol>(Types::SYMBOL, token, nullptr));
+      dynamic_pointer_cast<Sexpr>(current)->add(
+          std::make_shared<Symbol>(Types::SYMBOL, token, nullptr));
     }
   }
   return ast;

@@ -14,37 +14,31 @@ enum class Types { NUMBER, STRING, SYMBOL, ERROR, SEXPR, FUNCTION };
 
 class BaseValue {
  public:
-  virtual void add(std::shared_ptr<BaseValue>) = 0;
-  [[maybe_unused]] virtual std::string getName() = 0;
-  [[maybe_unused]] virtual std::shared_ptr<BaseValue> getValue() = 0;
-  [[maybe_unused]] virtual Types getType() = 0;
+  BaseValue(Types tp) : type(tp) {}
+  Types getType() { return type; }
   virtual ~BaseValue() = default;
+
+ private:
+  Types type;
 };
 
 class Literal : public BaseValue {
  public:
-  Literal(Types tp, const std::string& val) : type(tp), value(val) {}
-  std::string getName() override { return value; }
-  Types getType() override { return type; }
-  void add(std::shared_ptr<BaseValue>) override{};
-  std::shared_ptr<BaseValue> getValue() override { return nullptr; }
-  std::string value;
+  Literal(Types tp, std::string val) : BaseValue(tp), value(std::move(val)) {}
+  std::string getValue() { return value; }
 
  private:
-  Types type;
+  std::string value;
 };
 
 class Symbol : public BaseValue {
  public:
-  Symbol(Types tp, const std::string& name, std::unique_ptr<BaseValue> val)
-      : type(tp), name(name), value(std::move(val)) {}
-  std::string getName() override { return name; }
-  std::shared_ptr<BaseValue> getValue() override { return value; }
-  void add(std::shared_ptr<BaseValue>) override{};
-  Types getType() override { return type; }
+  Symbol(Types tp, std::string name, std::unique_ptr<BaseValue> val)
+      : BaseValue(tp), name(std::move(name)), value(std::move(val)) {}
+  std::string getName() { return name; }
+  std::shared_ptr<BaseValue> getValue() { return value; }
 
  private:
-  Types type;
   std::string name;
   std::shared_ptr<BaseValue> value;
 };
@@ -55,32 +49,22 @@ class Function : public BaseValue {
       std::unique_ptr<Env>, std::unique_ptr<BaseValue>)>;
 
  public:
-  Function(Types tp, const std::string& name, Func f)
-      : type(tp), name(name), func(std::move(f)) {}
-  std::string getName() override { return name; }
-  std::shared_ptr<BaseValue> getValue() override { return nullptr; }
-  Types getType() override { return type; }
-  void add(std::shared_ptr<BaseValue>) override{};
+  Function(Types tp, std::string name, Func f)
+      : BaseValue(tp), name(std::move(name)), func(std::move(f)) {}
+  std::string getName() { return name; }
+
+  Func func;
 
  private:
   std::string name;
-  // should it be ptr?
-  Func func;
-  Types type;
 };
 
 class Sexpr : public BaseValue {
  public:
-  explicit Sexpr(Types tp) : type(tp) {}
-  void add(std::shared_ptr<BaseValue> val) override;
-  std::shared_ptr<BaseValue> getValue() override { return nullptr; }
-  Types getType() override { return type; }
-  std::string getName() override { return "<Sexpr>"; }
-
+  explicit Sexpr(Types tp) : BaseValue(tp) {}
+  void add(std::shared_ptr<BaseValue> val);
+  std::vector<std::shared_ptr<BaseValue>> getValue();
   std::vector<std::shared_ptr<BaseValue>> expr;
-
- private:
-  Types type;
 };
 
 #endif
