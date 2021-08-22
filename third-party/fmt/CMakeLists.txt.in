@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(fmt NONE)
+
+include(ExternalProject)
+
+ExternalProject_Add(fmt
+  URL               https://github.com/fmtlib/fmt/archive/refs/tags/8.0.1.tar.gz
+  SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/fmt-src"
+  BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/fmt-build"
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     ""
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+)

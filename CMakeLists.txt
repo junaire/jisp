@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 20)
 project(jisp)
 
-find_package(GTest REQUIRED)
-find_package(fmt REQUIRED)
+add_subdirectory(third-party/google-test)
+add_subdirectory(third-party/fmt)
+
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 SET(SOURCES
 	src/env.cc
