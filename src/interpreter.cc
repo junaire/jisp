@@ -1,8 +1,6 @@
-#include "interpreter.h"
-/*
-std::vector<std::unique_ptr<BaseValue>> Interpreter::eval()
-{
-	std::vector<std::unique_ptr<BaseValue>> result{nullptr};
-	return result;
+#include "jisp/interpreter.h"
+
+ValuePtr Interpreter::eval() {
+  if (ast->getType() == Types::NUMBER) return ast;
+  return nullptr;
 }
-*/

@@ -2,59 +2,15 @@ cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 20)
 project(jisp)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
 add_subdirectory(third-party/google-test)
 add_subdirectory(third-party/fmt)
 
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
-SET(SOURCES
-	src/env.cc
-	src/types.cc
-	src/main.cc
-	src/tokenizer.cc
-	src/lexer.cc
-	src/interpreter.cc
-)
-
-add_executable(
-	jisp
-	${SOURCES}
-)
-target_include_directories(
-	jisp
-	PUBLIC
-	${PROJECT_SOURCE_DIR}/include
-)
-
-target_link_libraries(
-	jisp
-	PRIVATE
-	fmt::fmt
-)
+add_subdirectory(src)
 
 enable_testing()
-
-add_executable(
-	test_jisp
-	tests/test_jisp.cc
-	src/env.cc
-	src/lexer.cc
-	src/types.cc
-	src/tokenizer.cc
-	src/interpreter.cc
-)
-
-target_include_directories(
-	test_jisp
-	PUBLIC
-	${PROJECT_SOURCE_DIR}/include
-)
-
-target_link_libraries(
-	test_jisp
-	PRIVATE
-	fmt::fmt
-	GTest::GTest
-	GTest::Main
-)
-
-add_test(test_all test_jisp)
+add_subdirectory(tests)
+add_test(NAME test COMMAND ${CMAKE_BINARY_DIR}/bin/test_jisp)

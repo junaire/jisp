@@ -1,20 +1,7 @@
-#include "lexer.h"
+#include "jisp/interpreter.h"
+#include "jisp/lexer.h"
+#include "jisp/parser.h"
 #include "linenoise.hpp"
-#include "tokenizer.h"
-
-// Actual logic here
-void exec(const std::string& line) {
-  // read => eval => print
-  Tokenizer tokenizer(line);
-  auto tokens = tokenizer.tokenize();
-  Lexer lexer(tokens);
-  auto ast = lexer.parse();
-
-  // We need parse it to AST tree
-  // Now we have a vector of BaseValue ptrs;
-  // Eval it
-  // print it
-}
 
 int main() {
   const auto path = "history.txt";
@@ -29,7 +16,14 @@ int main() {
     if (quit) {
       break;
     }
-    exec(line);
+
+    auto lexer = Lexer(line);
+
+    auto parser = Parser(lexer.tokenize());
+
+    auto interpreter = Interpreter(parser.parse());
+
+    interpreter.eval()->inspect();
 
     linenoise::AddHistory(line.c_str());
   }
