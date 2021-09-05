@@ -9,11 +9,12 @@ enum class Types {
 };
 
 enum class TokenType {
+  STRING,
   PLUS,
   MINUS,
   MULTIPLY,
   DIVIDE,
-  NAME,
+  SYMBOL,
   NUMBER,
   LBRACKET,
   RBRACKET
