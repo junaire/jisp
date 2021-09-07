@@ -20,15 +20,11 @@ ValuePtr Parser::parseValue() {
       return std::make_unique<NumberValue>(token);
     case TokenType::STRING:
       return std::make_unique<StringValue>(token);
-    case TokenType::SYMBOL:
-      return std::make_unique<SymbolValue>(token);
     case TokenType::PLUS:
-      return std::make_unique<SymbolValue>(token);
     case TokenType::MINUS:
-      return std::make_unique<SymbolValue>(token);
     case TokenType::MULTIPLY:
-      return std::make_unique<SymbolValue>(token);
     case TokenType::DIVIDE:
+    case TokenType::SYMBOL:
       return std::make_unique<SymbolValue>(token);
     case TokenType::LBRACKET:
       return parseSexpr();
