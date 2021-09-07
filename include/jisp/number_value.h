@@ -14,7 +14,7 @@ class NumberValue final : public Value {
 
   void inspect() override { fmt::print("{}\n", value); }
 
-  int getValue() { return value; }
+  int getValue() const { return value; }
 
  private:
   int value;

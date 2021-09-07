@@ -12,7 +12,7 @@ class StringValue final : public Value {
  public:
   StringValue(const Token& token) : StringValue(token.getValue()) {}
   StringValue(const std::string& value) : Value(Types::STRING), value(value) {}
-  std::string getValue() { return value; }
+  std::string getValue() const { return value; }
   void inspect() override { std::cout << value; }
 
  private:
