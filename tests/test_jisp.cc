@@ -24,7 +24,7 @@ TEST(JispTest, LexerTest) {
 }
 
 TEST(JispTest, ParserTest) {
-  auto lexer = Lexer("(+1 (- 2 3))");
+  auto lexer = Lexer("(+1 (- 244 3))");
   auto tokens = lexer.tokenize();
   auto parser = Parser(tokens);
   auto ast = parser.parse();
@@ -42,7 +42,7 @@ TEST(JispTest, ParserTest) {
   EXPECT_EQ("-", tmp5->getName());
 
   auto tmp6 = std::dynamic_pointer_cast<NumberValue>((*tmp4)[1]);
-  EXPECT_EQ("2", std::to_string(tmp6->getValue()));
+  EXPECT_EQ("244", std::to_string(tmp6->getValue()));
 
   auto tmp7 = std::dynamic_pointer_cast<NumberValue>((*tmp4)[2]);
   EXPECT_EQ("3", std::to_string(tmp7->getValue()));

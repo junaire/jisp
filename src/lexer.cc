@@ -26,12 +26,11 @@ std::optional<Token> Lexer::lexNumber(const std::string& code) {
   if (!std::isdigit(code[position])) return std::nullopt;
   advance();
   while (true) {
-    if (!std::isdigit(code[position]) || code[position] != '.')
-      break;
-    else {
+    if (std::isdigit(code[position]) || code[position] == '.') {
       value += code[position];
       advance();
-    }
+    } else
+      break;
   }
   return Token(TokenType::NUMBER, value);
 }
