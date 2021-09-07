@@ -4,7 +4,7 @@
 #include "jisp/parser.h"
 class Interpreter {
  public:
-  Interpreter(ValuePtr vptr) : ast(std::move(vptr)) {}
+  explicit Interpreter(ValuePtr vptr) : ast(std::move(vptr)) {}
   ValuePtr eval();
 
  private:

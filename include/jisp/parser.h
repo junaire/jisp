@@ -5,20 +5,21 @@
 #include <string>
 #include <vector>
 
-#include "jisp/lambda_value.h"
-#include "jisp/number_value.h"
-#include "jisp/symbol_value.h"
 #include "jisp/token.h"
-#include "jisp/value.h"
 
+class Value;
 using Tokens = std::vector<Token>;
 using ValuePtr = std::shared_ptr<Value>;
+
 class Parser {
  public:
-  Parser(const Tokens& tokens) : tokens(tokens) {}
+  Parser(const Tokens& tokens) : tokens(tokens), index(0) {}
   ValuePtr parse();
 
  private:
+  ValuePtr parseSexpr();
+  ValuePtr parseValue();
   Tokens tokens;
+  size_t index;
 };
 #endif

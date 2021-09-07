@@ -23,8 +23,6 @@ int main() {
 
     auto interpreter = Interpreter(parser.parse());
 
-    interpreter.eval()->inspect();
-
     linenoise::AddHistory(line.c_str());
   }
   // Save history

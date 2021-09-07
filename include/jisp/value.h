@@ -5,19 +5,15 @@
 #include <string>
 #include <vector>
 
+#include "jisp/parser.h"
 #include "jisp/types.h"
-
-class NumberValue;
 
 class Value {
  public:
-  Value(Types type) : type(type) {}
+  explicit Value(Types type) : type(type) {}
   virtual ~Value() = default;
-  Types getType() const { return type; }
+  [[nodiscard]] Types getType() const { return type; }
   virtual void inspect() = 0;
-  // std::unique_ptr<NumberValue> toNumberValue() {
-  // return std::dynamic_cast<NumberValue*>(this);
-  //}
 
  private:
   Types type;

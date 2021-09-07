@@ -9,8 +9,8 @@ class Token {
   Token() = default;
   Token(TokenType type, std::string value)
       : type(type), value(std::move(value)) {}
-  std::string getValue() { return value; }
-  TokenType getType() { return type; }
+  std::string getValue() const { return value; }
+  TokenType getType() const { return type; }
 
  private:
   std::string value;

@@ -3,11 +3,14 @@
 
 #include <fmt/format.h>
 
+#include "jisp/token.h"
 #include "jisp/types.h"
 #include "jisp/value.h"
 class NumberValue final : public Value {
  public:
-  NumberValue(std::string val) : Value(Types::NUMBER), value(std::stoi(val)) {}
+  NumberValue(const Token& token) : NumberValue(token.getValue()) {}
+  NumberValue(const std::string& val)
+      : Value(Types::NUMBER), value(std::stoi(val)) {}
 
   void inspect() override { fmt::print("{}\n", value); }
 
