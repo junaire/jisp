@@ -24,8 +24,7 @@ int main() {
 
     auto interpreter = Interpreter(parser.parse());
     auto result = interpreter.eval();
-    if (result->getType() == Types::NUMBER)
-      std::dynamic_pointer_cast<NumberValue>(result)->inspect();
+    if (result->getType() == Types::NUMBER) result->inspect();
 
     linenoise::AddHistory(line.c_str());
   }
