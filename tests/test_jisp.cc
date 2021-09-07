@@ -48,6 +48,11 @@ TEST(JispTest, ParserTest) {
   EXPECT_EQ("3", std::to_string(tmp7->getValue()));
 }
 
-/*
-TEST(JispTest, InterpreterTest) {}
-*/
+TEST(JispTest, InterpreterTest) {
+  auto lexer = Lexer("( + 1 2)");
+  auto parser = Parser(lexer.tokenize());
+  auto interpreter = Interpreter(parser.parse());
+  EXPECT_EQ("3", std::to_string(
+                     std::dynamic_pointer_cast<NumberValue>(interpreter.eval())
+                         ->getValue()));
+}

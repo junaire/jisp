@@ -1,5 +1,6 @@
 #include "jisp/interpreter.h"
 #include "jisp/lexer.h"
+#include "jisp/number_value.h"
 #include "jisp/parser.h"
 #include "linenoise.hpp"
 
@@ -22,6 +23,9 @@ int main() {
     auto parser = Parser(lexer.tokenize());
 
     auto interpreter = Interpreter(parser.parse());
+    auto result = interpreter.eval();
+    if (result->getType() == Types::NUMBER)
+      std::dynamic_pointer_cast<NumberValue>(result)->inspect();
 
     linenoise::AddHistory(line.c_str());
   }
