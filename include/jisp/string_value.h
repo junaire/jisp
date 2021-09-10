@@ -10,9 +10,9 @@
 
 class StringValue final : public Value {
  public:
-  StringValue(const Token& token) : StringValue(token.getValue()) {}
-  StringValue(const std::string& value) : Value(Types::STRING), value(value) {}
-  std::string getValue() const { return value; }
+  explicit StringValue(const Token& token) : StringValue(token.getValue()) {}
+  explicit StringValue(std::string value) : Value(Types::STRING), value(std::move(value)) {}
+  [[nodiscard]] std::string getValue() const { return value; }
   void inspect() override { std::cout << value; }
 
  private:

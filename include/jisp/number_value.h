@@ -8,13 +8,14 @@
 #include "jisp/value.h"
 class NumberValue final : public Value {
  public:
-  NumberValue(const Token& token) : NumberValue(token.getValue()) {}
-  NumberValue(const std::string& val)
+  explicit NumberValue(const Token& token) : NumberValue(token.getValue()) {}
+  explicit NumberValue(const std::string& val)
       : Value(Types::NUMBER), value(std::stoi(val)) {}
+  explicit NumberValue(int val) : Value(Types::NUMBER), value(val) {}
 
   void inspect() override { fmt::print("{}\n", value); }
 
-  int getValue() const { return value; }
+  [[nodiscard]] int getValue() const { return value; }
 
  private:
   int value;

@@ -13,7 +13,7 @@ using ValuePtr = std::shared_ptr<Value>;
 
 class Parser {
  public:
-  Parser(const Tokens& tokens) : tokens(tokens), index(0) {}
+  explicit Parser(Tokens tokens) : tokens(std::move(tokens)), index(0) {}
   ValuePtr parse();
 
  private:

@@ -9,12 +9,12 @@
 
 class SymbolValue : public Value {
  public:
-  SymbolValue(const Token& token) : SymbolValue(token.getValue(), nullptr) {}
+  explicit SymbolValue(const Token& token) : SymbolValue(token.getValue(), nullptr) {}
   SymbolValue(std::string name, std::unique_ptr<Value> value)
       : Value(Types::SYMBOL), name(std::move(name)), value(std::move(value)) {}
 
   void inspect() override { value->inspect(); }
-  std::string getName() const { return name; }
+  [[nodiscard]] std::string getName() const { return name; }
 
  private:
   std::string name;

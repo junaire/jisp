@@ -1,9 +1,9 @@
 SET(SOURCES
-	env.cc
 	main.cc
 	lexer.cc
 	parser.cc
 	interpreter.cc
+	builtin.cc
 )
 
 add_executable(

@@ -2,12 +2,15 @@
 
 #include <string>
 
+#include "jisp/builtin.h"
+#include "jisp/env.h"
 #include "jisp/interpreter.h"
 #include "jisp/lexer.h"
 #include "jisp/number_value.h"
 #include "jisp/parser.h"
 #include "jisp/sexpr_value.h"
 #include "jisp/symbol_value.h"
+#include "jisp/types.h"
 
 TEST(JispTest, LexerTest) {
   auto lexer = Lexer("( + 1 ( - 2 3))");
@@ -48,10 +51,21 @@ TEST(JispTest, ParserTest) {
   EXPECT_EQ("3", std::to_string(tmp7->getValue()));
 }
 
+TEST(JispTest, EnvTest) {
+  Env env;
+  add_builtins(env);
+  EXPECT_EQ(Types::FUNCTION, env.get("+")->getType());
+  EXPECT_EQ(Types::FUNCTION, env.get("-")->getType());
+  EXPECT_EQ(Types::FUNCTION, env.get("*")->getType());
+  EXPECT_EQ(Types::FUNCTION, env.get("/")->getType());
+}
+
 TEST(JispTest, InterpreterTest) {
   auto lexer = Lexer("( + 1 2)");
   auto parser = Parser(lexer.tokenize());
-  auto interpreter = Interpreter(parser.parse());
+  Env env;
+  add_builtins(env);
+  auto interpreter = Interpreter(parser.parse(), env);
   EXPECT_EQ("3", std::to_string(
                      std::dynamic_pointer_cast<NumberValue>(interpreter.eval())
                          ->getValue()));

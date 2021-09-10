@@ -1,7 +1,10 @@
+#include "jisp/builtin.h"
+#include "jisp/function_value.h"
 #include "jisp/interpreter.h"
 #include "jisp/lexer.h"
 #include "jisp/number_value.h"
 #include "jisp/parser.h"
+#include "jisp/sexpr_value.h"
 #include "linenoise.hpp"
 
 int main() {
@@ -22,8 +25,11 @@ int main() {
 
     auto parser = Parser(lexer.tokenize());
 
-    auto interpreter = Interpreter(parser.parse());
+    Env env;
+    add_builtins(env);
+    auto interpreter = Interpreter(parser.parse(), env);
     auto result = interpreter.eval();
+    // We should write a helper function, like `jispPrint`
     if (result->getType() == Types::NUMBER) result->inspect();
 
     linenoise::AddHistory(line.c_str());
