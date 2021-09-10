@@ -1,6 +1,5 @@
 #include "jisp/parser.h"
 
-#include "jisp/lambda_value.h"
 #include "jisp/number_value.h"
 #include "jisp/sexpr_value.h"
 #include "jisp/string_value.h"

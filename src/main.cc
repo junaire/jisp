@@ -1,10 +1,7 @@
 #include "jisp/builtin.h"
-#include "jisp/function_value.h"
 #include "jisp/interpreter.h"
 #include "jisp/lexer.h"
-#include "jisp/number_value.h"
 #include "jisp/parser.h"
-#include "jisp/sexpr_value.h"
 #include "linenoise.hpp"
 
 int main() {

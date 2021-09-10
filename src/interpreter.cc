@@ -1,7 +1,6 @@
 #include "jisp/interpreter.h"
 
 #include "jisp/function_value.h"
-#include "jisp/number_value.h"
 #include "jisp/sexpr_value.h"
 #include "jisp/symbol_value.h"
 #include "jisp/types.h"

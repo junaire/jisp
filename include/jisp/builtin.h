@@ -4,7 +4,7 @@
 #include "jisp/function_value.h"
 #include "jisp/value.h"
 
-ValuePtr builtinOperators(Env& env, ValuePtr vp, const char* op);
+ValuePtr builtinOperators(Env& env, const ValuePtr& vp, const char* op);
 
 ValuePtr add_builtin(const BuiltinFunction& func);
 
