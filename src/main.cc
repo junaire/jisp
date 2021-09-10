@@ -27,7 +27,7 @@ int main() {
     auto interpreter = Interpreter(parser.parse(), env);
     auto result = interpreter.eval();
     // We should write a helper function, like `jispPrint`
-    if (result->getType() == Types::NUMBER) result->inspect();
+    result->inspect();
 
     linenoise::AddHistory(line.c_str());
   }

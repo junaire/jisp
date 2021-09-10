@@ -5,7 +5,8 @@
 
 ValuePtr builtinOperators(Env& env, const ValuePtr& vp, const char* op) {
   auto sexpr = std::dynamic_pointer_cast<SexprValue>(vp);
-  int result = 0;
+  int result =
+      std::dynamic_pointer_cast<NumberValue>(sexpr->pop(0))->getValue();
   if (strcmp(op, "+") == 0) {
     for (int i = 0; i < sexpr->size(); i++)
       result += std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();

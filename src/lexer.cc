@@ -36,13 +36,14 @@ std::optional<Token> Lexer::lexNumber(const std::string& code) {
 }
 
 std::optional<Token> Lexer::lexString(const std::string& code) {
-  std::string value{code[position]};
+  std::string value;
   if (code[position] != '"') return std::nullopt;
   advance();
   while (true) {
-    if (code[position] == '"')
+    if (code[position] == '"') {
+      advance();
       break;
-    else {
+    } else {
       value += code[position];
       advance();
     }

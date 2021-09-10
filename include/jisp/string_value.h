@@ -1,7 +1,8 @@
 #ifndef JISP_STRING_VALUE_H_
 #define JISP_STRING_VALUE_H_
 
-#include <iostream>
+#include <fmt/format.h>
+
 #include <string>
 
 #include "jisp/token.h"
@@ -11,9 +12,10 @@
 class StringValue final : public Value {
  public:
   explicit StringValue(const Token& token) : StringValue(token.getValue()) {}
-  explicit StringValue(std::string value) : Value(Types::STRING), value(std::move(value)) {}
+  explicit StringValue(std::string value)
+      : Value(Types::STRING), value(std::move(value)) {}
   [[nodiscard]] std::string getValue() const { return value; }
-  void inspect() override { std::cout << value; }
+  void inspect() override { fmt::print("{}\n", value); }
 
  private:
   std::string value;
