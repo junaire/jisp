@@ -103,8 +103,10 @@ std::optional<Token> Lexer::lexOperator(const std::string& code) {
       advance();
       return Token(TokenType::MINUS, std::string(1, current));
     case '*':
+      advance();
       return Token(TokenType::MULTIPLY, std::string(1, current));
     case '/':
+      advance();
       return Token(TokenType::DIVIDE, std::string(1, current));
     default:
       return std::nullopt;

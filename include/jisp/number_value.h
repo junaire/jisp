@@ -13,7 +13,7 @@ class NumberValue final : public Value {
       : Value(Types::NUMBER), value(std::stoi(val)) {}
   explicit NumberValue(int val) : Value(Types::NUMBER), value(val) {}
 
-  void inspect() override { fmt::print("Number: {}\n", value); }
+  void inspect() override { fmt::print("{}\n", value); }
 
   [[nodiscard]] int getValue() const { return value; }
 
