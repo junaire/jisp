@@ -12,7 +12,11 @@ class SexprValue final : public Value {
 
  public:
   explicit SexprValue(Types type) : Value(type) {}
-  void inspect() override{};
+  void inspect() override {
+    for (const auto& ele : elements) {
+      ele->inspect();
+    }
+  };
   void push(ValuePtr val) { elements.push_back(std::move(val)); }
   ValuePtr operator[](size_t idx) {
     assert(idx < elements.size());

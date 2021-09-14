@@ -23,7 +23,7 @@ class Env {
 
   ValuePtr get(const std::string& name) {
     // auto result = environment.find(name);
-    auto result = environment.find("+");
+    auto result = environment.find(name);
     if (result != environment.end())
       return result->second;
     else

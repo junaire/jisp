@@ -15,7 +15,7 @@ class StringValue final : public Value {
   explicit StringValue(std::string value)
       : Value(Types::STRING), value(std::move(value)) {}
   [[nodiscard]] std::string getValue() const { return value; }
-  void inspect() override { fmt::print("{}\n", value); }
+  void inspect() override { fmt::print("String: {}\n", value); }
 
  private:
   std::string value;
