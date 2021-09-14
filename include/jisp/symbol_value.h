@@ -16,7 +16,11 @@ class SymbolValue : public Value {
   SymbolValue(std::string name, std::unique_ptr<Value> value)
       : Value(Types::SYMBOL), name(std::move(name)), value(std::move(value)) {}
 
-  void inspect() override { fmt::print("Symbol: {}\n", name); }
+  void inspect() override {
+    if (value) {
+      value->inspect();
+    }
+  }
   [[nodiscard]] std::string getName() const { return name; }
 
  private:
