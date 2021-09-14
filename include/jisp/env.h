@@ -16,7 +16,7 @@ class Env {
   // Env(const Env&) = delete;
   // Env(Env&&) = default;
   void set(std::string name, ValuePtr val) {
-    // TODO: if we already have that symbol, we should update it instead of
+    // TODO(Jun): if we already have that symbol, we should update it instead of
     // creating a new one
     environment.emplace(std::make_pair(std::move(name), std::move(val)));
   }
@@ -24,11 +24,11 @@ class Env {
   ValuePtr get(const std::string& name) {
     // auto result = environment.find(name);
     auto result = environment.find(name);
-    if (result != environment.end())
+    if (result != environment.end()) {
       return result->second;
-    else
-      std::terminate();
-    // TODO: If we can't find the symbol, we should throw an error:
+    }
+    std::terminate();
+    // TODO(Jun): If we can't find the symbol, we should throw an error:
     // Unbound symbol
   }
 

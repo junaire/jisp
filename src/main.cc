@@ -5,7 +5,7 @@
 #include "linenoise.hpp"
 
 int main() {
-  const auto path = "history.txt";
+  const auto* path = "history.txt";
   // Load history
   linenoise::LoadHistory(path);
 

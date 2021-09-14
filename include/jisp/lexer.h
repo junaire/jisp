@@ -15,12 +15,12 @@ class Lexer {
   Tokens tokenize();
 
  private:
-  std::optional<Token> lex(const std::string& input);
-  std::optional<Token> lexNumber(const std::string& input);
-  std::optional<Token> lexSymbol(const std::string& input);
-  std::optional<Token> lexString(const std::string& input);
-  std::optional<Token> lexSyntax(const std::string& input);
-  std::optional<Token> lexOperator(const std::string& input);
+  std::optional<Token> lex(const std::string& code);
+  std::optional<Token> lexNumber(const std::string& code);
+  std::optional<Token> lexSymbol(const std::string& code);
+  std::optional<Token> lexString(const std::string& code);
+  std::optional<Token> lexSyntax(const std::string& code);
+  std::optional<Token> lexOperator(const std::string& code);
 
   void skipWhiteSpace();
   void advance();

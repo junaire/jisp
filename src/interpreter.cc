@@ -18,6 +18,9 @@ ValuePtr Interpreter::evalNode(ValuePtr node) {
           std::dynamic_pointer_cast<SymbolValue>(node)->getName());
     case Types::SEXPR:
       return evalSexpr(node);
+    case Types::LAMBDA:
+    case Types::FUNCTION:
+      return nullptr;
   }
 }
 

@@ -8,24 +8,28 @@ ValuePtr builtinOperators(Env& env, const ValuePtr& vp, const char* op) {
   int result =
       std::dynamic_pointer_cast<NumberValue>(sexpr->pop(0))->getValue();
   if (strcmp(op, "+") == 0) {
-    for (int i = 0; i < sexpr->size(); i++)
+    for (int i = 0; i < sexpr->size(); i++) {
       result += std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();
+    }
   }
 
   if (strcmp(op, "-") == 0) {
-    for (int i = 0; i < sexpr->size(); i++)
+    for (int i = 0; i < sexpr->size(); i++) {
       result -= std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();
+    }
   }
 
   if (strcmp(op, "*") == 0) {
-    for (int i = 0; i < sexpr->size(); i++)
+    for (int i = 0; i < sexpr->size(); i++) {
       result *= std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();
+    }
   }
 
   if (strcmp(op, "/") == 0) {
-    // TODO: throw an error when dividend is 0
-    for (int i = 0; i < sexpr->size(); i++)
+    // TODO(Jun): throw an error when dividend is 0
+    for (int i = 0; i < sexpr->size(); i++) {
       result /= std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();
+    }
   }
   return std::make_shared<NumberValue>(result);
 }

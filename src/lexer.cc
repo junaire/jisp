@@ -29,24 +29,26 @@ std::optional<Token> Lexer::lexNumber(const std::string& code) {
     if (std::isdigit(code[position]) || code[position] == '.') {
       value += code[position];
       advance();
-    } else
+    } else {
       break;
+    }
   }
   return Token(TokenType::NUMBER, value);
 }
 
 std::optional<Token> Lexer::lexString(const std::string& code) {
   std::string value;
-  if (code[position] != '"') return std::nullopt;
+  if (code[position] != '"') {
+    return std::nullopt;
+  }
   advance();
   while (true) {
     if (code[position] == '"') {
       advance();
       break;
-    } else {
-      value += code[position];
-      advance();
     }
+    value += code[position];
+    advance();
   }
   return Token(TokenType::STRING, value);
 }
@@ -56,26 +58,26 @@ std::optional<Token> Lexer::lexSymbol(const std::string& code) {
   if (!std::isalpha(code[position])) return std::nullopt;
   advance();
   while (true) {
-    if (!std::isalpha(code[position]))
+    if (!std::isalpha(code[position])) {
       break;
-    else {
-      value += code[position];
-      advance();
     }
+    value += code[position];
+    advance();
   }
   return Token(TokenType::SYMBOL, value);
 }
 
 void Lexer::skipWhiteSpace() {
-  if (!std::isspace(code[position])) return;
+  if (!std::isspace(code[position])) {
+    return;
+  }
 
   while (true) {
     if (std::isspace(code[position])) {
       advance();
       continue;
-    } else {
-      return;
     }
+    return;
   }
 }
 
@@ -114,5 +116,7 @@ std::optional<Token> Lexer::lexOperator(const std::string& code) {
 }
 
 void Lexer::advance() {
-  if (position < length) ++position;
+  if (position < length) {
+    ++position;
+  }
 }
