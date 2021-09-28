@@ -4,6 +4,7 @@
 #include "jisp/builtin.h"
 #include "jisp/lexer.h"
 #include "jisp/parser.h"
+#include "jisp/sexpr_value.h"
 #include "linenoise.hpp"
 
 int main() {
@@ -30,8 +31,13 @@ int main() {
 
     auto parser = Parser(lexer.tokenize());
 
-    auto result = parser.parse();
-    std::cout << result->accept(visitor)->inspect() << "\n";
+    auto result = parser.parse()->accept(visitor);
+
+    if (result->isSexpr()) {
+      if (result->toSexpr()->size() != 0) {
+        result->inspect();
+      }
+    }
 
     linenoise::AddHistory(line.c_str());
   }
