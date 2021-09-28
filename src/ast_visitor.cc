@@ -17,7 +17,7 @@ std::unique_ptr<Value> ASTVisitor::visit(StringValue* str) {
 }
 
 std::unique_ptr<Value> ASTVisitor::visit(FunctionValue* func) {
-  return std::make_unique<FunctionValue>(func->get());
+  return std::make_unique<FunctionValue>(func->getName(), func->get());
 }
 
 std::unique_ptr<Value> ASTVisitor::visit(SymbolValue* sym) {
@@ -32,7 +32,8 @@ std::unique_ptr<Value> ASTVisitor::visit(SymbolValue* sym) {
     return std::make_unique<StringValue>(val->toString()->getValue());
   }
   if (val->isFunction()) {
-    return std::make_unique<FunctionValue>(val->toFunction()->get());
+    return std::make_unique<FunctionValue>(val->toFunction()->getName(),
+                                           val->toFunction()->get());
   }
   if (val->isSexpr()) {
     auto res = std::make_unique<SexprValue>();

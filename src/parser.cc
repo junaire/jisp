@@ -22,23 +22,27 @@ std::unique_ptr<Value> Parser::parseValue() {
     case TokenType::STRING:
       return std::make_unique<StringValue>(token.getValue());
     case TokenType::PLUS:
-      return std::make_unique<FunctionValue>(
-          [](Env& env, Value* vp) { return builtinOperators(env, vp, "+"); });
+      return std::make_unique<FunctionValue>("+", [](Env& env, Value* vp) {
+        return builtinOperators(env, vp, "+");
+      });
     case TokenType::MINUS:
-      return std::make_unique<FunctionValue>(
-          [](Env& env, Value* vp) { return builtinOperators(env, vp, "-"); });
+      return std::make_unique<FunctionValue>("-", [](Env& env, Value* vp) {
+        return builtinOperators(env, vp, "-");
+      });
     case TokenType::MULTIPLY:
-      return std::make_unique<FunctionValue>(
-          [](Env& env, Value* vp) { return builtinOperators(env, vp, "*"); });
+      return std::make_unique<FunctionValue>("*", [](Env& env, Value* vp) {
+        return builtinOperators(env, vp, "*");
+      });
     case TokenType::DIVIDE:
-      return std::make_unique<FunctionValue>(
-          [](Env& env, Value* vp) { return builtinOperators(env, vp, "/"); });
+      return std::make_unique<FunctionValue>("/", [](Env& env, Value* vp) {
+        return builtinOperators(env, vp, "/");
+      });
     case TokenType::PRINT:
       return std::make_unique<FunctionValue>(
-          [](Env& env, Value* vp) { return builtinPrint(env, vp); });
+          "print", [](Env& env, Value* vp) { return builtinPrint(env, vp); });
     case TokenType::DEFINE:
       return std::make_unique<FunctionValue>(
-          [](Env& env, Value* vp) { return builtinDefine(env, vp); });
+          "define", [](Env& env, Value* vp) { return builtinDefine(env, vp); });
     case TokenType::SYMBOL:
       return std::make_unique<SymbolValue>(token.getValue(), nullptr);
     case TokenType::LBRACKET:
