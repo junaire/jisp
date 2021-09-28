@@ -12,5 +12,5 @@ add_subdirectory(third-party/fmt)
 add_subdirectory(src)
 
 enable_testing()
-#add_subdirectory(tests)
+add_subdirectory(tests)
 add_test(NAME test COMMAND ${CMAKE_BINARY_DIR}/bin/test_jisp)
