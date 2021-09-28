@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -13,21 +14,28 @@
 class Env {
  public:
   Env() = default;
-  // Env(const Env&) = delete;
-  // Env(Env&&) = default;
-  void set(std::string name, ValuePtr val) {
+  ~Env() = default;
+
+  /*
+  Env(const Env&) = delete;
+  Env& operator=(const Env&) = delete;
+  */
+  Env(Env&&) = delete;
+  Env& operator=(Env&&) = delete;
+
+  void set(std::string name, std::unique_ptr<Value> val) {
     // TODO(Jun): if we already have that symbol, we should update it instead of
     // creating a new one
     environment.emplace(std::make_pair(std::move(name), std::move(val)));
   }
 
-  ValuePtr get(const std::string& name) {
+  Value* get(const std::string& name) {
     // auto result = environment.find(name);
     auto result = environment.find(name);
     if (result != environment.end()) {
-      return result->second;
+      return result->second.get();
     }
-    std::terminate();
+    return nullptr;
     // TODO(Jun): If we can't find the symbol, we should throw an error:
     // Unbound symbol
   }
@@ -35,12 +43,11 @@ class Env {
   // Debug popurse
   void dump() {
     for (const auto& item : environment) {
-      fmt::print("{} => ", item.first);
-      item.second->inspect();
+      fmt::print("Use std::visit here\n");
     }
   }
 
  private:
-  std::unordered_map<std::string, ValuePtr> environment;
+  std::unordered_map<std::string, std::unique_ptr<Value>> environment;
 };
 #endif

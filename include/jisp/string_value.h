@@ -1,21 +1,18 @@
 #ifndef JISP_STRING_VALUE_H_
 #define JISP_STRING_VALUE_H_
 
-#include <fmt/format.h>
-
 #include <string>
 
 #include "jisp/token.h"
-#include "jisp/types.h"
 #include "jisp/value.h"
 
-class StringValue final : public Value {
+class StringValue : public Value {
  public:
   explicit StringValue(const Token& token) : StringValue(token.getValue()) {}
-  explicit StringValue(std::string value)
-      : Value(Types::STRING), value(std::move(value)) {}
+  explicit StringValue(std::string value) : value(std::move(value)) {}
   [[nodiscard]] std::string getValue() const { return value; }
-  void inspect() override { fmt::print("{}\n", value); }
+  std::string inspect() override { return value; }
+  std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
 
  private:
   std::string value;

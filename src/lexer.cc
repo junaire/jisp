@@ -50,6 +50,7 @@ std::optional<Token> Lexer::lexString(const std::string& code) {
     value += code[position];
     advance();
   }
+
   return Token(TokenType::STRING, value);
 }
 
@@ -63,6 +64,14 @@ std::optional<Token> Lexer::lexSymbol(const std::string& code) {
     }
     value += code[position];
     advance();
+  }
+
+  // TODO(Jun): refactor this
+  if (value == "print") {
+    return Token(TokenType::PRINT, value);
+  }
+  if (value == "define") {
+    return Token(TokenType::DEFINE, value);
   }
   return Token(TokenType::SYMBOL, value);
 }

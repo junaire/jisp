@@ -1,36 +1,40 @@
 #ifndef JISP_SEXPR_VALUE_H_
 #define JISP_SEXPR_VALUE_H_
 
-#include <cassert>
+#include <vector>
 
 #include "jisp/token.h"
-#include "jisp/types.h"
 #include "jisp/value.h"
 
-class SexprValue final : public Value {
-  using SexprSize = std::vector<ValuePtr>::size_type;
-
+class SexprValue : public Value {
  public:
-  explicit SexprValue(Types type) : Value(type) {}
-  void inspect() override {
+  explicit SexprValue() = default;
+  std::string inspect() override {
+    std::string ouput{"( "};
     for (const auto& ele : elements) {
-      ele->inspect();
+      ouput.append(ele->inspect());
+      ouput.append(" ");
     }
+    ouput.append(")");
+    return ouput;
   };
-  void push(ValuePtr val) { elements.push_back(std::move(val)); }
-  ValuePtr operator[](size_t idx) {
-    assert(idx < elements.size());
-    return elements[idx];
-  }
-  [[nodiscard]] SexprSize size() const { return elements.size(); }
-  ValuePtr pop(size_t idx) {
-    assert(idx < elements.size());
-    auto popEle = elements[idx];
+
+  std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
+
+  void push(std::unique_ptr<Value> val) { elements.push_back(std::move(val)); }
+
+  std::unique_ptr<Value> pop(size_t idx) {
+    auto popEle = std::move(elements[idx]);
     elements.erase(elements.begin() + idx);
     return popEle;
   }
 
- private:
-  std::vector<ValuePtr> elements;
+  [[nodiscard]] auto size() const { return elements.size(); }
+
+  Value* at(size_t idx) { return elements[idx].get(); }
+
+  std::unique_ptr<Value>& get(size_t idx) { return elements[idx]; }
+
+  std::vector<std::unique_ptr<Value>> elements;
 };
 #endif

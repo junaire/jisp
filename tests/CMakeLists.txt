@@ -3,7 +3,6 @@ add_executable(
 	${PROJECT_SOURCE_DIR}/tests/test_jisp.cc
 	${PROJECT_SOURCE_DIR}/src/lexer.cc
 	${PROJECT_SOURCE_DIR}/src/parser.cc
-	${PROJECT_SOURCE_DIR}/src/interpreter.cc
 	${PROJECT_SOURCE_DIR}/src/builtin.cc
 )
 

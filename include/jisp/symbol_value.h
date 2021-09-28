@@ -14,18 +14,15 @@ class SymbolValue : public Value {
   explicit SymbolValue(const Token& token)
       : SymbolValue(token.getValue(), nullptr) {}
   SymbolValue(std::string name, std::unique_ptr<Value> value)
-      : Value(Types::SYMBOL), name(std::move(name)), value(std::move(value)) {}
+      : name(std::move(name)), value(value) {}
 
-  void inspect() override {
-    if (value) {
-      value->inspect();
-    }
-  }
+  std::string inspect() override { return value->inspect(); }
+  std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
   [[nodiscard]] std::string getName() const { return name; }
 
  private:
   std::string name;
-  std::unique_ptr<Value> value;
+  std::unique_ptr<Value>& value;
 };
 
 #endif

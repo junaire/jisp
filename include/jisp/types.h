@@ -1,8 +1,6 @@
 #ifndef JISP_TYPES_H_
 #define JISP_TYPES_H_
 
-enum class Types { NUMBER, STRING, SYMBOL, LAMBDA, SEXPR, FUNCTION };
-
 enum class TokenType {
   STRING,
   PLUS,
@@ -12,6 +10,8 @@ enum class TokenType {
   SYMBOL,
   NUMBER,
   LBRACKET,
-  RBRACKET
+  RBRACKET,
+  PRINT,
+  DEFINE
 };
 #endif

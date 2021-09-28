@@ -8,8 +8,8 @@
 #include "jisp/env.h"
 #include "jisp/value.h"
 
-class LambdaValue : public Value {
+class LambdaValue {
  public:
-  LambdaValue() : Value(Types::LAMBDA) {}
+  LambdaValue() = default;
 };
 #endif

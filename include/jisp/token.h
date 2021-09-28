@@ -6,7 +6,6 @@
 #include "jisp/types.h"
 class Token {
  public:
-  Token() = default;
   Token(TokenType type, std::string value)
       : type(type), value(std::move(value)) {}
   [[nodiscard]] std::string getValue() const { return value; }

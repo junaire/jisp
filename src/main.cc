@@ -1,5 +1,7 @@
+#include <iostream>
+
+#include "jisp/ast_visitor.h"
 #include "jisp/builtin.h"
-#include "jisp/interpreter.h"
 #include "jisp/lexer.h"
 #include "jisp/parser.h"
 #include "linenoise.hpp"
@@ -8,6 +10,12 @@ int main() {
   const auto* path = "history.txt";
   // Load history
   linenoise::LoadHistory(path);
+
+  // global environment
+  auto env = std::make_shared<Env>();
+  auto visitor = ASTVisitor(env);
+
+  fmt::print("Jun's own Lisp\n");
 
   while (true) {
     // Read line
@@ -22,12 +30,8 @@ int main() {
 
     auto parser = Parser(lexer.tokenize());
 
-    Env env;
-    add_builtins(env);
-    auto interpreter = Interpreter(parser.parse(), env);
-    auto result = interpreter.eval();
-    // We should write a helper function, like `jispPrint`
-    result->inspect();
+    auto result = parser.parse();
+    std::cout << result->accept(visitor)->inspect() << "\n";
 
     linenoise::AddHistory(line.c_str());
   }

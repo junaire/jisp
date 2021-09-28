@@ -9,16 +9,15 @@
 
 class Value;
 using Tokens = std::vector<Token>;
-using ValuePtr = std::shared_ptr<Value>;
 
 class Parser {
  public:
   explicit Parser(Tokens tokens) : tokens(std::move(tokens)), index(0) {}
-  ValuePtr parse();
+  std::unique_ptr<Value> parse();
 
  private:
-  ValuePtr parseSexpr();
-  ValuePtr parseValue();
+  std::unique_ptr<Value> parseSexpr();
+  std::unique_ptr<Value> parseValue();
   Tokens tokens;
   size_t index;
 };

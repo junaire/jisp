@@ -4,25 +4,27 @@
 #include <fmt/format.h>
 
 #include <functional>
-#include <iostream>
 #include <utility>
 
 #include "jisp/env.h"
 #include "jisp/token.h"
-#include "jisp/types.h"
 #include "jisp/value.h"
-using BuiltinFunction = std::function<ValuePtr(Env&, ValuePtr)>;
 
-class FunctionValue final : public Value {
+using BuiltinFunction = std::function<std::unique_ptr<Value>(Env&, Value*)>;
+
+class FunctionValue : public Value {
  public:
-  explicit FunctionValue(BuiltinFunction fun)
-      : Value(Types::FUNCTION), func(std::move(fun)) {}
+  explicit FunctionValue(BuiltinFunction fun) : func(std::move(fun)) {}
 
-  void inspect() override {
-    std::cout << "<builtin function> in " << &func << "\n";
+  std::string inspect() override {
+    return fmt::format("<builtin function> in {}\n", fmt::ptr(&func));
   }
 
-  ValuePtr call(Env& env, ValuePtr vp) { return func(env, std::move(vp)); }
+  std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
+
+  std::unique_ptr<Value> call(Env& env, Value* vp) { return func(env, vp); }
+
+  BuiltinFunction get() { return func; }
 
  private:
   BuiltinFunction func;

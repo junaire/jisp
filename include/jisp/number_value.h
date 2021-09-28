@@ -4,16 +4,17 @@
 #include <fmt/format.h>
 
 #include "jisp/token.h"
-#include "jisp/types.h"
 #include "jisp/value.h"
-class NumberValue final : public Value {
+
+class NumberValue : public Value {
  public:
   explicit NumberValue(const Token& token) : NumberValue(token.getValue()) {}
-  explicit NumberValue(const std::string& val)
-      : Value(Types::NUMBER), value(std::stoi(val)) {}
-  explicit NumberValue(int val) : Value(Types::NUMBER), value(val) {}
+  explicit NumberValue(const std::string& val) : value(std::stoi(val)) {}
+  explicit NumberValue(int val) : value(val) {}
 
-  void inspect() override { fmt::print("{}\n", value); }
+  std::string inspect() override { return fmt::format("{}", value); }
+
+  std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
 
   [[nodiscard]] int getValue() const { return value; }
 

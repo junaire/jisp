@@ -3,19 +3,26 @@
 
 #include <memory>
 #include <string>
-#include <vector>
+class ASTVisitor;
 
-#include "jisp/parser.h"
-#include "jisp/types.h"
+class NumberValue;
+class StringValue;
+class SymbolValue;
+class FunctionValue;
+class SexprValue;
 
 class Value {
  public:
-  explicit Value(Types type) : type(type) {}
-  virtual ~Value() = default;
-  [[nodiscard]] Types getType() const { return type; }
-  virtual void inspect() = 0;
+  Value() = default;
 
- private:
-  Types type;
+  NumberValue* toNumber();
+  StringValue* toString();
+  SymbolValue* toSymbol();
+  SexprValue* toSexpr();
+  FunctionValue* toFunction();
+
+  virtual std::unique_ptr<Value> accept(ASTVisitor&) = 0;
+  virtual std::string inspect() = 0;
+  virtual ~Value() = default;
 };
 #endif

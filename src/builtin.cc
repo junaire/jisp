@@ -1,64 +1,48 @@
 #include "jisp/builtin.h"
 
+#include "jisp/function_value.h"
 #include "jisp/number_value.h"
 #include "jisp/sexpr_value.h"
+#include "jisp/symbol_value.h"
 
-ValuePtr builtinOperators(Env& env, const ValuePtr& vp, const char* op) {
-  auto sexpr = std::dynamic_pointer_cast<SexprValue>(vp);
-  int result =
-      std::dynamic_pointer_cast<NumberValue>(sexpr->pop(0))->getValue();
+std::unique_ptr<Value> builtinOperators(Env& env, Value* vp, const char* op) {
+  auto* sexpr = vp->toSexpr();
+  int result = sexpr->pop(0)->toNumber()->getValue();
   if (strcmp(op, "+") == 0) {
     for (int i = 0; i < sexpr->size(); i++) {
-      result += std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();
+      result += sexpr->at(i)->toNumber()->getValue();
     }
   }
 
   if (strcmp(op, "-") == 0) {
     for (int i = 0; i < sexpr->size(); i++) {
-      result -= std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();
+      result -= sexpr->at(i)->toNumber()->getValue();
     }
   }
 
   if (strcmp(op, "*") == 0) {
     for (int i = 0; i < sexpr->size(); i++) {
-      result *= std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();
+      result *= sexpr->at(i)->toNumber()->getValue();
     }
   }
 
   if (strcmp(op, "/") == 0) {
     // TODO(Jun): throw an error when dividend is 0
     for (int i = 0; i < sexpr->size(); i++) {
-      result /= std::dynamic_pointer_cast<NumberValue>((*sexpr)[i])->getValue();
+      result /= sexpr->at(i)->toNumber()->getValue();
     }
   }
-  return std::make_shared<NumberValue>(result);
+  return std::make_unique<NumberValue>(result);
 }
 
-ValuePtr builtinPrint(Env& env, const ValuePtr& vp) {
-  auto sexpr = std::dynamic_pointer_cast<SexprValue>(vp);
+std::unique_ptr<Value> builtinPrint(Env& env, Value* vp) {
+  auto* sexpr = vp->toSexpr();
   sexpr->inspect();
-  return std::make_shared<SexprValue>(Types::SEXPR);
+  return std::make_unique<SexprValue>();
 }
 
-ValuePtr add_builtin(const BuiltinFunction& func) {
-  return std::make_shared<FunctionValue>(func);
-}
-
-void add_builtins(Env& env) {
-  env.set("+", add_builtin([](Env& env, const ValuePtr& vp) {
-            return builtinOperators(env, vp, "+");
-          }));
-  env.set("-", add_builtin([](Env& env, const ValuePtr& vp) {
-            return builtinOperators(env, vp, "-");
-          }));
-  env.set("*", add_builtin([](Env& env, const ValuePtr& vp) {
-            return builtinOperators(env, vp, "*");
-          }));
-  env.set("/", add_builtin([](Env& env, const ValuePtr& vp) {
-            return builtinOperators(env, vp, "/");
-          }));
-
-  env.set("print", add_builtin([](Env& env, const ValuePtr& vp) {
-            return builtinPrint(env, vp);
-          }));
+std::unique_ptr<Value> builtinDefine(Env& env, Value* vp) {
+  auto* sexpr = vp->toSexpr();
+  env.set(sexpr->at(0)->toSymbol()->getName(), std::move(sexpr->get(1)));
+  return std::make_unique<SexprValue>();
 }
