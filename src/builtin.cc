@@ -36,8 +36,9 @@ std::unique_ptr<Value> builtinOperators(Env& env, Value* vp, const char* op) {
 }
 
 std::unique_ptr<Value> builtinPrint(Env& env, Value* vp) {
-  auto* sexpr = vp->toSexpr();
-  sexpr->inspect();
+  if (vp->toSexpr()->size() == 1) {
+    std::cout << vp->toSexpr()->at(0)->inspect() << "\n";
+  }
   return std::make_unique<SexprValue>();
 }
 

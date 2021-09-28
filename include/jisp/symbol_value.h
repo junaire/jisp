@@ -7,14 +7,15 @@
 #include <string>
 
 #include "jisp/token.h"
+#include "jisp/types.h"
 #include "jisp/value.h"
 
-class SymbolValue : public Value {
+class SymbolValue final : public Value {
  public:
   explicit SymbolValue(const Token& token)
       : SymbolValue(token.getValue(), nullptr) {}
   SymbolValue(std::string name, std::unique_ptr<Value> value)
-      : name(std::move(name)), value(value) {}
+      : name(std::move(name)), value(value), Value(ValueType::SYMBOL) {}
 
   std::string inspect() override { return value->inspect(); }
   std::unique_ptr<Value> accept(ASTVisitor& visitor) override;

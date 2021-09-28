@@ -25,7 +25,22 @@ std::unique_ptr<Value> ASTVisitor::visit(SymbolValue* sym) {
   if (!val) {
     return std::make_unique<SymbolValue>(sym->getName(), nullptr);
   }
-  return std::make_unique<NumberValue>(val->toNumber()->getValue());
+  if (val->isNumber()) {
+    return std::make_unique<NumberValue>(val->toNumber()->getValue());
+  }
+  if (val->isString()) {
+    return std::make_unique<StringValue>(val->toString()->getValue());
+  }
+  if (val->isFunction()) {
+    return std::make_unique<FunctionValue>(val->toFunction()->get());
+  }
+  if (val->isSexpr()) {
+    auto res = std::make_unique<SexprValue>();
+    while (val->toSexpr()->size() != 0) {
+      res->push(val->toSexpr()->pop(0));
+    }
+    return res;
+  }
 }
 
 std::unique_ptr<Value> ASTVisitor::visit(SexprValue* sexpr) {

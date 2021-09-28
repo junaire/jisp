@@ -4,12 +4,20 @@
 #include <vector>
 
 #include "jisp/token.h"
+#include "jisp/types.h"
 #include "jisp/value.h"
 
-class SexprValue : public Value {
+class SexprValue final : public Value {
  public:
-  explicit SexprValue() = default;
+  SexprValue() : Value(ValueType::SEXPR){};
+
+  [[nodiscard]] auto size() const { return elements.size(); }
+
   std::string inspect() override {
+    if (size() == 0) {
+      return "";
+    }
+
     std::string ouput{"( "};
     for (const auto& ele : elements) {
       ouput.append(ele->inspect());
@@ -28,8 +36,6 @@ class SexprValue : public Value {
     elements.erase(elements.begin() + idx);
     return popEle;
   }
-
-  [[nodiscard]] auto size() const { return elements.size(); }
 
   Value* at(size_t idx) { return elements[idx].get(); }
 

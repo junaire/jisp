@@ -8,13 +8,15 @@
 
 #include "jisp/env.h"
 #include "jisp/token.h"
+#include "jisp/types.h"
 #include "jisp/value.h"
 
 using BuiltinFunction = std::function<std::unique_ptr<Value>(Env&, Value*)>;
 
-class FunctionValue : public Value {
+class FunctionValue final : public Value {
  public:
-  explicit FunctionValue(BuiltinFunction fun) : func(std::move(fun)) {}
+  explicit FunctionValue(BuiltinFunction fun)
+      : func(std::move(fun)), Value(ValueType::FUNCTION) {}
 
   std::string inspect() override {
     return fmt::format("<builtin function> in {}\n", fmt::ptr(&func));

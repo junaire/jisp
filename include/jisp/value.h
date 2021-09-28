@@ -3,6 +3,9 @@
 
 #include <memory>
 #include <string>
+
+#include "jisp/types.h"
+
 class ASTVisitor;
 
 class NumberValue;
@@ -13,7 +16,8 @@ class SexprValue;
 
 class Value {
  public:
-  Value() = default;
+  explicit Value(ValueType tp) : type(tp){};
+  virtual ~Value() = default;
 
   NumberValue* toNumber();
   StringValue* toString();
@@ -21,8 +25,16 @@ class Value {
   SexprValue* toSexpr();
   FunctionValue* toFunction();
 
+  [[nodiscard]] bool isNumber() const { return type == ValueType::NUMBER; }
+  [[nodiscard]] bool isString() const { return type == ValueType::STRING; }
+  [[nodiscard]] bool isSymbol() const { return type == ValueType::SYMBOL; }
+  [[nodiscard]] bool isSexpr() const { return type == ValueType::SEXPR; }
+  [[nodiscard]] bool isFunction() const { return type == ValueType::FUNCTION; }
+
   virtual std::unique_ptr<Value> accept(ASTVisitor&) = 0;
   virtual std::string inspect() = 0;
-  virtual ~Value() = default;
+
+ private:
+  ValueType type;
 };
 #endif
