@@ -35,8 +35,10 @@ int main() {
 
     if (result->isSexpr()) {
       if (result->toSexpr()->size() != 0) {
-        result->inspect();
+        std::cout << result->inspect() << "\n";
       }
+    } else {
+      std::cout << result->inspect() << "\n";
     }
 
     linenoise::AddHistory(line.c_str());
