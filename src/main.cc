@@ -2,6 +2,7 @@
 
 #include "jisp/ast_visitor.h"
 #include "jisp/builtin.h"
+#include "jisp/env.h"
 #include "jisp/lexer.h"
 #include "jisp/parser.h"
 #include "jisp/sexpr_value.h"
@@ -13,7 +14,7 @@ int main() {
   linenoise::LoadHistory(path);
 
   // global environment
-  auto env = std::make_shared<Env>();
+  auto env = std::make_shared<Env>(nullptr);
   auto visitor = ASTVisitor(env);
 
   fmt::print("Jun's own Lisp\n");

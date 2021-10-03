@@ -11,6 +11,7 @@ class StringValue;
 class SymbolValue;
 class SexprValue;
 class FunctionValue;
+class LambdaValue;
 
 class ASTVisitor {
  public:
@@ -22,6 +23,7 @@ class ASTVisitor {
 
   std::unique_ptr<Value> visit(SymbolValue* sym);
   std::unique_ptr<Value> visit(SexprValue* sexpr);
+  std::unique_ptr<Value> visit(LambdaValue* sexpr);
   std::shared_ptr<Env> enviroment;
 };
 #endif

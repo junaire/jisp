@@ -12,4 +12,7 @@ std::unique_ptr<Value> builtinPrint(Env& env, Value* vp);
 
 // builtin function define
 std::unique_ptr<Value> builtinDefine(Env& env, Value* vp);
+
+// builtin function lambda
+std::unique_ptr<Value> builtinLambda(Env& env, Value* vp);
 #endif

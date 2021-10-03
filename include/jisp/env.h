@@ -3,7 +3,6 @@
 
 #include <fmt/format.h>
 
-#include <iostream>
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,13 +12,13 @@
 
 class Env {
  public:
+  explicit Env(Env* par) : parent(par){};
+
   Env() = default;
   ~Env() = default;
 
-  /*
   Env(const Env&) = delete;
   Env& operator=(const Env&) = delete;
-  */
   Env(Env&&) = delete;
   Env& operator=(Env&&) = delete;
 
@@ -43,11 +42,14 @@ class Env {
   // Debug popurse
   void dump() {
     for (const auto& item : environment) {
-      fmt::print("Use std::visit here\n");
+      fmt::print("name = {}, value = {}\n", item.first, item.second->inspect());
     }
   }
 
+  void setParent(Env* par) { parent = par; }
+
  private:
   std::unordered_map<std::string, std::unique_ptr<Value>> environment;
+  Env* parent = nullptr;
 };
 #endif

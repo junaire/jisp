@@ -73,6 +73,9 @@ std::optional<Token> Lexer::lexSymbol(const std::string& code) {
   if (value == "define") {
     return Token(TokenType::DEFINE, value);
   }
+  if (value == "lambda") {
+    return Token(TokenType::LAMBDA, value);
+  }
   return Token(TokenType::SYMBOL, value);
 }
 

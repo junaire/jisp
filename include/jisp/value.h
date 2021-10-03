@@ -13,6 +13,7 @@ class StringValue;
 class SymbolValue;
 class FunctionValue;
 class SexprValue;
+class LambdaValue;
 
 class Value {
  public:
@@ -24,12 +25,14 @@ class Value {
   SymbolValue* toSymbol();
   SexprValue* toSexpr();
   FunctionValue* toFunction();
+  LambdaValue* toLambda();
 
   [[nodiscard]] bool isNumber() const { return type == ValueType::NUMBER; }
   [[nodiscard]] bool isString() const { return type == ValueType::STRING; }
   [[nodiscard]] bool isSymbol() const { return type == ValueType::SYMBOL; }
   [[nodiscard]] bool isSexpr() const { return type == ValueType::SEXPR; }
   [[nodiscard]] bool isFunction() const { return type == ValueType::FUNCTION; }
+  [[nodiscard]] bool isLambda() const { return type == ValueType::LAMBDA; }
 
   virtual std::unique_ptr<Value> accept(ASTVisitor&) = 0;
   virtual std::string inspect() = 0;

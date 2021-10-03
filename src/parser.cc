@@ -6,6 +6,7 @@
 #include "jisp/sexpr_value.h"
 #include "jisp/string_value.h"
 #include "jisp/symbol_value.h"
+#include "jisp/types.h"
 
 std::unique_ptr<Value> Parser::parse() {
   while (index < tokens.size()) {
@@ -15,7 +16,7 @@ std::unique_ptr<Value> Parser::parse() {
 }
 
 std::unique_ptr<Value> Parser::parseValue() {
-  auto token = tokens[index++];
+   auto token = tokens[index++];
   switch (token.getType()) {
     case TokenType::NUMBER:
       return std::make_unique<NumberValue>(token.getValue());
@@ -43,6 +44,10 @@ std::unique_ptr<Value> Parser::parseValue() {
     case TokenType::DEFINE:
       return std::make_unique<FunctionValue>(
           "define", [](Env& env, Value* vp) { return builtinDefine(env, vp); });
+    case TokenType::LAMBDA:
+      // It is a builtin function, and it makes a lambda
+      return std::make_unique<FunctionValue>(
+          "lambda", [](Env& env, Value* vp) { return builtinLambda(env, vp); });
     case TokenType::SYMBOL:
       return std::make_unique<SymbolValue>(token.getValue(), nullptr);
     case TokenType::LBRACKET:
@@ -55,6 +60,9 @@ std::unique_ptr<Value> Parser::parseSexpr() {
   auto sexpr = std::make_unique<SexprValue>();
   while (tokens[index].getType() != TokenType::RBRACKET) {
     sexpr->push(parseValue());
+  }
+  if (index < tokens.size()){
+    index++;
   }
 
   return sexpr;
