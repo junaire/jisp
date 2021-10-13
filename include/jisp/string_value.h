@@ -15,6 +15,10 @@ class StringValue final : public Value {
   [[nodiscard]] std::string getValue() const { return value; }
   std::string inspect() override { return value; }
   std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
+  [[nodiscard]] bool isLiteral() const override { return true; }
+  std::unique_ptr<Value> clone() override {
+    return std::make_unique<StringValue>(value);
+  }
 
  private:
   std::string value;

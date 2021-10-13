@@ -1,6 +1,7 @@
 #ifndef JISP_LAMBDA_H_
 #define JISP_LAMBDA_H_
 
+#include <cassert>
 #include <functional>
 #include <memory>
 #include <string>
@@ -15,24 +16,28 @@ class LambdaValue final : public Value {
       : formals(std::move(f)),
         body(std::move(b)),
         Value(ValueType::LAMBDA),
-        env(par){};
+        // create a new environment
+        env(std::make_unique<Env>(par)){};
 
   std::string inspect() override { return "<lambda>"; };
   std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
+  [[nodiscard]] virtual bool isLiteral() const override { return false; }
   SexprValue* getFormals() { return formals->toSexpr(); }
   SexprValue* getBody() { return body->toSexpr(); }
 
-  // FIXME: maybe we can use move or copy constructor
-  std::unique_ptr<Value> moveFormals() { return std::move(formals); }
-  std::unique_ptr<Value> moveBody() { return std::move(body); }
+  std::unique_ptr<Value> clone() override {
+    return std::make_unique<LambdaValue>(formals->clone(), body->clone(),
+                                         env.get());
+  }
   void setFormals(std::string name, std::unique_ptr<Value> val) {
     env->set(std::move(name), std::move(val));
   }
+
+  std::unique_ptr<Value> eval();
 
  private:
   std::unique_ptr<Env> env;
   std::unique_ptr<Value> formals;
   std::unique_ptr<Value> body;
-  // TODO(Jun): add an environment for our lambda value
 };
 #endif

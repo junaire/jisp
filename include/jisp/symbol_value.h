@@ -12,18 +12,20 @@
 
 class SymbolValue final : public Value {
  public:
-  explicit SymbolValue(const Token& token)
-      : SymbolValue(token.getValue(), nullptr) {}
-  SymbolValue(std::string name, std::unique_ptr<Value> value)
-      : name(std::move(name)), value(value), Value(ValueType::SYMBOL) {}
+  explicit SymbolValue(const Token& token) : SymbolValue(token.getValue()) {}
+  explicit SymbolValue(std::string name)
+      : name(std::move(name)), Value(ValueType::SYMBOL) {}
 
-  std::string inspect() override { return value->inspect(); }
+  std::string inspect() override { return "<Symbol>"; }
   std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
+  [[nodiscard]] bool isLiteral() const override { return false; }
   [[nodiscard]] std::string getName() const { return name; }
+  std::unique_ptr<Value> clone() override {
+    return std::make_unique<SymbolValue>(name);
+  }
 
  private:
   std::string name;
-  std::unique_ptr<Value>& value;
 };
 
 #endif

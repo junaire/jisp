@@ -13,9 +13,7 @@ int main() {
   // Load history
   linenoise::LoadHistory(path);
 
-  // global environment
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
+  auto visitor = ASTVisitor(std::make_unique<Env>(nullptr));
 
   fmt::print("Jun's own Lisp\n");
 
@@ -35,7 +33,7 @@ int main() {
     auto result = parser.parse()->accept(visitor);
 
     if (result->isSexpr()) {
-      if (result->toSexpr()->size() != 0) {
+      if (!result->toSexpr()->empty()) {
         std::cout << result->inspect() << "\n";
       }
     } else {

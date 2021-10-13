@@ -17,10 +17,12 @@ class Env {
   Env() = default;
   ~Env() = default;
 
+  /*
   Env(const Env&) = delete;
   Env& operator=(const Env&) = delete;
   Env(Env&&) = delete;
   Env& operator=(Env&&) = delete;
+  */
 
   void set(std::string name, std::unique_ptr<Value> val) {
     // TODO(Jun): if we already have that symbol, we should update it instead of

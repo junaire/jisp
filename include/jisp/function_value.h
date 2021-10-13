@@ -16,22 +16,29 @@ using BuiltinFunction = std::function<std::unique_ptr<Value>(Env&, Value*)>;
 
 class FunctionValue final : public Value {
  public:
-  FunctionValue(std::string n, BuiltinFunction fun)
-      : func(std::move(fun)), name(std::move(n)), Value(ValueType::FUNCTION) {}
+  FunctionValue(std::string n, bool needLiteralArgs, BuiltinFunction fun)
+      : func(std::move(fun)),
+        name(std::move(n)),
+        Value(ValueType::FUNCTION),
+        needLiteralArgs(needLiteralArgs) {}
 
-  std::string inspect() override {
-    return fmt::format("<builtin function> in {}\n", fmt::ptr(&func));
-  }
+  std::string inspect() override { return getName(); }
 
   std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
 
   std::unique_ptr<Value> call(Env& env, Value* vp) { return func(env, vp); }
 
-  BuiltinFunction get() { return func; }
+  [[nodiscard]] bool isLiteral() const override { return true; }
 
+  std::unique_ptr<Value> clone() override {
+    return std::make_unique<FunctionValue>(name, needLiteralArgs, func);
+  }
   [[nodiscard]] std::string getName() const { return name; }
 
+  [[nodiscard]] bool isNeedLiteralArgs() const { return needLiteralArgs; }
+
  private:
+  bool needLiteralArgs;
   std::string name;
   BuiltinFunction func;
 };

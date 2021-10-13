@@ -18,6 +18,12 @@ class NumberValue final : public Value {
 
   std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
 
+  [[nodiscard]] bool isLiteral() const override { return true; }
+
+  std::unique_ptr<Value> clone() override {
+    return std::make_unique<NumberValue>(value);
+  }
+
   [[nodiscard]] int getValue() const { return value; }
 
  private:

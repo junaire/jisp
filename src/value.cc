@@ -44,3 +44,9 @@ FunctionValue* Value::toFunction() {
   return dynamic_cast<FunctionValue*>(this);
 }
 
+std::unique_ptr<Value> LambdaValue::eval() {
+  // FIXME: env can be shared
+  ASTVisitor visitor(std::move(env));
+  return visitor.visit(getBody());
+}
+

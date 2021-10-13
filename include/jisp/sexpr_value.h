@@ -13,9 +13,14 @@ class SexprValue final : public Value {
 
   [[nodiscard]] auto size() const { return elements.size(); }
 
+  [[nodiscard]] bool empty() const { return elements.empty(); }
+
   std::string inspect() override {
-    if (size() == 0) {
+    if (empty()) {
       return "";
+    }
+    if (size() == 1) {
+      return elements.at(0)->inspect();
     }
 
     std::string ouput{"( "};
@@ -29,8 +34,35 @@ class SexprValue final : public Value {
 
   std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
 
+  [[nodiscard]] bool isLiteral() const override {
+    for (const auto& ele : elements) {
+      if (!ele->isLiteral()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  [[nodiscard]] bool isPartLiteral(int idx) {
+    for (; idx < size(); idx++) {
+      if (!at(idx)->isLiteral()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  std::unique_ptr<Value> clone() override {
+    auto newSexpr = std::make_unique<SexprValue>();
+    for (auto& value : elements) {
+      newSexpr->push(value->clone());
+    }
+    return newSexpr;
+  }
+
   void push(std::unique_ptr<Value> val) { elements.push_back(std::move(val)); }
 
+  // TODO(Jun): maybe we can use a better container to store elements
   std::unique_ptr<Value> pop(size_t idx) {
     auto popEle = std::move(elements[idx]);
     elements.erase(elements.begin() + idx);

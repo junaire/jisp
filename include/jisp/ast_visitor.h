@@ -15,7 +15,7 @@ class LambdaValue;
 
 class ASTVisitor {
  public:
-  explicit ASTVisitor(std::shared_ptr<Env>& env) : enviroment(env) {}
+  explicit ASTVisitor(std::unique_ptr<Env> env) : enviroment(std::move(env)) {}
 
   std::unique_ptr<Value> visit(NumberValue* num);
   std::unique_ptr<Value> visit(StringValue* str);
@@ -24,6 +24,6 @@ class ASTVisitor {
   std::unique_ptr<Value> visit(SymbolValue* sym);
   std::unique_ptr<Value> visit(SexprValue* sexpr);
   std::unique_ptr<Value> visit(LambdaValue* sexpr);
-  std::shared_ptr<Env> enviroment;
+  std::unique_ptr<Env> enviroment;
 };
 #endif

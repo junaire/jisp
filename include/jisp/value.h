@@ -36,6 +36,8 @@ class Value {
 
   virtual std::unique_ptr<Value> accept(ASTVisitor&) = 0;
   virtual std::string inspect() = 0;
+  [[nodiscard]] virtual bool isLiteral() const = 0;
+  virtual std::unique_ptr<Value> clone() = 0;
 
  private:
   ValueType type;

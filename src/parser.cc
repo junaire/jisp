@@ -16,40 +16,43 @@ std::unique_ptr<Value> Parser::parse() {
 }
 
 std::unique_ptr<Value> Parser::parseValue() {
-   auto token = tokens[index++];
+  auto token = tokens[index++];
   switch (token.getType()) {
     case TokenType::NUMBER:
       return std::make_unique<NumberValue>(token.getValue());
     case TokenType::STRING:
       return std::make_unique<StringValue>(token.getValue());
     case TokenType::PLUS:
-      return std::make_unique<FunctionValue>("+", [](Env& env, Value* vp) {
-        return builtinOperators(env, vp, "+");
-      });
+      return std::make_unique<FunctionValue>(
+          "+", true,
+          [](Env& env, Value* vp) { return builtinOperators(env, vp, "+"); });
     case TokenType::MINUS:
-      return std::make_unique<FunctionValue>("-", [](Env& env, Value* vp) {
-        return builtinOperators(env, vp, "-");
-      });
+      return std::make_unique<FunctionValue>(
+          "-", true,
+          [](Env& env, Value* vp) { return builtinOperators(env, vp, "-"); });
     case TokenType::MULTIPLY:
-      return std::make_unique<FunctionValue>("*", [](Env& env, Value* vp) {
-        return builtinOperators(env, vp, "*");
-      });
+      return std::make_unique<FunctionValue>(
+          "*", true,
+          [](Env& env, Value* vp) { return builtinOperators(env, vp, "*"); });
     case TokenType::DIVIDE:
-      return std::make_unique<FunctionValue>("/", [](Env& env, Value* vp) {
-        return builtinOperators(env, vp, "/");
-      });
+      return std::make_unique<FunctionValue>(
+          "/", true,
+          [](Env& env, Value* vp) { return builtinOperators(env, vp, "/"); });
     case TokenType::PRINT:
       return std::make_unique<FunctionValue>(
-          "print", [](Env& env, Value* vp) { return builtinPrint(env, vp); });
+          "print", true,
+          [](Env& env, Value* vp) { return builtinPrint(env, vp); });
     case TokenType::DEFINE:
       return std::make_unique<FunctionValue>(
-          "define", [](Env& env, Value* vp) { return builtinDefine(env, vp); });
+          "define", false,
+          [](Env& env, Value* vp) { return builtinDefine(env, vp); });
     case TokenType::LAMBDA:
       // It is a builtin function, and it makes a lambda
       return std::make_unique<FunctionValue>(
-          "lambda", [](Env& env, Value* vp) { return builtinLambda(env, vp); });
+          "lambda", false,
+          [](Env& env, Value* vp) { return builtinLambda(env, vp); });
     case TokenType::SYMBOL:
-      return std::make_unique<SymbolValue>(token.getValue(), nullptr);
+      return std::make_unique<SymbolValue>(token.getValue());
     case TokenType::LBRACKET:
       return parseSexpr();
   }
@@ -61,7 +64,7 @@ std::unique_ptr<Value> Parser::parseSexpr() {
   while (tokens[index].getType() != TokenType::RBRACKET) {
     sexpr->push(parseValue());
   }
-  if (index < tokens.size()){
+  if (index < tokens.size()) {
     index++;
   }
 

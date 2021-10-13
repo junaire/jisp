@@ -5,14 +5,13 @@
 #include "jisp/ast_visitor.h"
 #include "jisp/builtin.h"
 #include "jisp/env.h"
+#include "jisp/function_value.h"
 #include "jisp/lexer.h"
 #include "jisp/number_value.h"
 #include "jisp/parser.h"
 #include "jisp/sexpr_value.h"
 #include "jisp/symbol_value.h"
 #include "jisp/types.h"
-#include "jisp/function_value.h"
-
 
 TEST(JispTest, LexerTest) {
   auto lexer = Lexer("( + 1 ( - 2 3))");
@@ -35,13 +34,13 @@ TEST(JispTest, ParserTest) {
   auto ast = parser.parse();
   auto* sexpr = ast->toSexpr();
 
- EXPECT_EQ("+", sexpr->at(0)->toFunction()->getName());
+  EXPECT_EQ("+", sexpr->at(0)->toFunction()->getName());
 
   EXPECT_EQ("1", std::to_string(sexpr->at(1)->toNumber()->getValue()));
 
   auto* subSexpr1 = sexpr->at(2)->toSexpr();
 
-   EXPECT_EQ("-", subSexpr1->at(0)->toFunction()->getName());
+  EXPECT_EQ("-", subSexpr1->at(0)->toFunction()->getName());
 
   EXPECT_EQ("244", std::to_string(subSexpr1->at(1)->toNumber()->getValue()));
 
@@ -52,14 +51,12 @@ TEST(JispTest, ParserTest) {
   EXPECT_EQ("*", subSexpr2->at(0)->toFunction()->getName());
   EXPECT_EQ("5", std::to_string(subSexpr2->at(1)->toNumber()->getValue()));
   EXPECT_EQ("6", std::to_string(subSexpr2->at(2)->toNumber()->getValue()));
-
 }
 
 TEST(JispTest, ASTVisitorTest) {
   auto lexer = Lexer("( + 1 2)");
   auto parser = Parser(lexer.tokenize());
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
+  auto visitor = ASTVisitor(std::make_unique<Env>(nullptr));
   auto result = parser.parse();
   EXPECT_EQ("3", result->accept(visitor)->inspect());
 }
