@@ -53,10 +53,20 @@ TEST(JispTest, ParserTest) {
   EXPECT_EQ("6", std::to_string(subSexpr2->at(2)->toNumber()->getValue()));
 }
 
-TEST(JispTest, ASTVisitorTest) {
-  auto lexer = Lexer("( + 1 2)");
+std::string interpret(const std::string& str, ASTVisitor& visitor) {
+  auto lexer = Lexer(str);
   auto parser = Parser(lexer.tokenize());
-  auto visitor = ASTVisitor(std::make_unique<Env>(nullptr));
   auto result = parser.parse();
-  EXPECT_EQ("3", result->accept(visitor)->inspect());
+  return result->accept(visitor)->inspect();
+}
+
+TEST(JispTest, ASTVisitorTest) {
+  auto visitor = ASTVisitor(std::make_unique<Env>(nullptr));
+  EXPECT_EQ("3", interpret("(+ 1 2)", visitor));
+}
+
+TEST(JispTest, LambdaTest) {
+  auto visitor = ASTVisitor(std::make_unique<Env>(nullptr));
+  interpret("(define func (lambda (x y) (* x y)))", visitor);
+  EXPECT_EQ("42", interpret("(func 21 2)", visitor));
 }
