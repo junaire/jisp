@@ -66,7 +66,9 @@ TEST(JispTest, ASTVisitorTest) {
 }
 
 TEST(JispTest, LambdaTest) {
-  auto visitor = ASTVisitor(std::make_unique<Env>(nullptr));
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+  initBuiltins(*env);
   interpret("(define func (lambda (x y) (* x y)))", visitor);
   EXPECT_EQ("42", interpret("(func 21 2)", visitor));
 }

@@ -66,16 +66,6 @@ std::optional<Token> Lexer::lexSymbol(const std::string& code) {
     advance();
   }
 
-  // TODO(Jun): refactor this
-  if (value == "print") {
-    return Token(TokenType::PRINT, value);
-  }
-  if (value == "define") {
-    return Token(TokenType::DEFINE, value);
-  }
-  if (value == "lambda") {
-    return Token(TokenType::LAMBDA, value);
-  }
   return Token(TokenType::SYMBOL, value);
 }
 

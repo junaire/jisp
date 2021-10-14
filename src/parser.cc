@@ -38,19 +38,6 @@ std::unique_ptr<Value> Parser::parseValue() {
       return std::make_unique<FunctionValue>(
           "/", true,
           [](Env& env, Value* vp) { return builtinOperators(env, vp, "/"); });
-    case TokenType::PRINT:
-      return std::make_unique<FunctionValue>(
-          "print", true,
-          [](Env& env, Value* vp) { return builtinPrint(env, vp); });
-    case TokenType::DEFINE:
-      return std::make_unique<FunctionValue>(
-          "define", false,
-          [](Env& env, Value* vp) { return builtinDefine(env, vp); });
-    case TokenType::LAMBDA:
-      // It is a builtin function, and it makes a lambda
-      return std::make_unique<FunctionValue>(
-          "lambda", false,
-          [](Env& env, Value* vp) { return builtinLambda(env, vp); });
     case TokenType::SYMBOL:
       return std::make_unique<SymbolValue>(token.getValue());
     case TokenType::LBRACKET:

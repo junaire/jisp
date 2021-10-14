@@ -13,7 +13,9 @@ int main() {
   // Load history
   linenoise::LoadHistory(path);
 
-  auto visitor = ASTVisitor(std::make_unique<Env>(nullptr));
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+  initBuiltins(*env);
 
   fmt::print("Jun's own Lisp\n");
 

@@ -13,8 +13,5 @@ enum class TokenType {
   NUMBER,
   LBRACKET,
   RBRACKET,
-  PRINT,
-  DEFINE,
-  LAMBDA
 };
 #endif
