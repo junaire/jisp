@@ -1,18 +1,20 @@
 #include "jisp/lexer.h"
 
-Tokens Lexer::tokenize() {
+Tokens Lexer::tokenize(std::string_view input) {
   std::vector<Token> tokens;
+  position = 0;
+  length = input.length();
 
   while (position < length) {
-    if (auto token = lex(code)) {
+    if (auto token = lex(input)) {
       tokens.push_back(std::move(*token));
     }
   }
   return tokens;
 }
 
-std::optional<Token> Lexer::lex(const std::string& code) {
-  skipWhiteSpace();
+std::optional<Token> Lexer::lex(std::string_view code) {
+  skipWhiteSpace(code);
   if (auto value = lexSyntax(code)) return value;
   if (auto value = lexOperator(code)) return value;
   if (auto value = lexNumber(code)) return value;
@@ -21,7 +23,7 @@ std::optional<Token> Lexer::lex(const std::string& code) {
   return std::nullopt;
 }
 
-std::optional<Token> Lexer::lexNumber(const std::string& code) {
+std::optional<Token> Lexer::lexNumber(const std::string_view code) {
   std::string value{code[position]};
   if (!std::isdigit(code[position])) return std::nullopt;
   advance();
@@ -36,7 +38,7 @@ std::optional<Token> Lexer::lexNumber(const std::string& code) {
   return Token(TokenType::NUMBER, value);
 }
 
-std::optional<Token> Lexer::lexString(const std::string& code) {
+std::optional<Token> Lexer::lexString(const std::string_view code) {
   std::string value;
   if (code[position] != '"') {
     return std::nullopt;
@@ -54,7 +56,7 @@ std::optional<Token> Lexer::lexString(const std::string& code) {
   return Token(TokenType::STRING, value);
 }
 
-std::optional<Token> Lexer::lexSymbol(const std::string& code) {
+std::optional<Token> Lexer::lexSymbol(const std::string_view code) {
   std::string value{code[position]};
   if (!std::isalpha(code[position])) return std::nullopt;
   advance();
@@ -69,7 +71,7 @@ std::optional<Token> Lexer::lexSymbol(const std::string& code) {
   return Token(TokenType::SYMBOL, value);
 }
 
-void Lexer::skipWhiteSpace() {
+void Lexer::skipWhiteSpace(std::string_view code) {
   if (!std::isspace(code[position])) {
     return;
   }
@@ -83,7 +85,7 @@ void Lexer::skipWhiteSpace() {
   }
 }
 
-std::optional<Token> Lexer::lexSyntax(const std::string& code) {
+std::optional<Token> Lexer::lexSyntax(const std::string_view code) {
   auto current = code[position];
   switch (current) {
     case '(':
@@ -97,7 +99,7 @@ std::optional<Token> Lexer::lexSyntax(const std::string& code) {
   }
 }
 
-std::optional<Token> Lexer::lexOperator(const std::string& code) {
+std::optional<Token> Lexer::lexOperator(const std::string_view code) {
   auto current = code[position];
   switch (current) {
     case '+':

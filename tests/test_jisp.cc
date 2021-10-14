@@ -14,21 +14,21 @@
 #include "jisp/types.h"
 
 std::string interpret(const std::string& str, ASTVisitor& visitor) {
-  auto lexer = Lexer(str);
-  auto parser = Parser(lexer.tokenize());
+  auto lexer = Lexer();
+  auto parser = Parser(lexer.tokenize(str));
   auto result = parser.parse();
   return result->accept(visitor)->inspect();
 }
 
 TEST(LexerTest, EmptyInput) {
-  auto lexer = Lexer(" ");
-  auto tokens = lexer.tokenize();
+  auto lexer = Lexer();
+  auto tokens = lexer.tokenize(" ");
   EXPECT_EQ(0, tokens.size());
 }
 
 TEST(LexerTest, SimpleArithmeticOperation) {
-  auto lexer = Lexer("( + 20 22 )");
-  auto tokens = lexer.tokenize();
+  auto lexer = Lexer();
+  auto tokens = lexer.tokenize("( + 20 22 )");
   EXPECT_EQ("(", tokens[0].getValue());
   EXPECT_EQ("+", tokens[1].getValue());
   EXPECT_EQ("20", tokens[2].getValue());
@@ -37,8 +37,8 @@ TEST(LexerTest, SimpleArithmeticOperation) {
 }
 
 TEST(LexerTest, ComplexArithmeticOperation) {
-  auto lexer = Lexer("( + 1 ( - 2 3))");
-  auto tokens = lexer.tokenize();
+  auto lexer = Lexer();
+  auto tokens = lexer.tokenize("( + 1 ( - 2 3))");
   EXPECT_EQ("(", tokens[0].getValue());
   EXPECT_EQ("+", tokens[1].getValue());
   EXPECT_EQ("1", tokens[2].getValue());
@@ -62,44 +62,28 @@ TEST(ParserTest, SimpleAddition) {
   auto env = std::make_shared<Env>(nullptr);
   auto visitor = ASTVisitor(env);
 
-  auto lexer = Lexer("(+ 40 2)");
-  auto tokens = lexer.tokenize();
-  auto parser = Parser(tokens);
-  auto result = parser.parse()->accept(visitor);
-  EXPECT_EQ("42", result->inspect());
+  EXPECT_EQ("42", interpret("(+ 40 2)", visitor));
 }
 
 TEST(ParserTest, SimpleSubtraction) {
   auto env = std::make_shared<Env>(nullptr);
   auto visitor = ASTVisitor(env);
 
-  auto lexer = Lexer("(- 48 6)");
-  auto tokens = lexer.tokenize();
-  auto parser = Parser(tokens);
-  auto result = parser.parse()->accept(visitor);
-  EXPECT_EQ("42", result->inspect());
+  EXPECT_EQ("42", interpret("(- 48 6)", visitor));
 }
 
 TEST(ParserTest, SimpleMultiplication) {
   auto env = std::make_shared<Env>(nullptr);
   auto visitor = ASTVisitor(env);
 
-  auto lexer = Lexer("(* 6 7)");
-  auto tokens = lexer.tokenize();
-  auto parser = Parser(tokens);
-  auto result = parser.parse()->accept(visitor);
-  EXPECT_EQ("42", result->inspect());
+  EXPECT_EQ("42", interpret("(* 6 7)", visitor));
 }
 
 TEST(ParserTest, SimpleDivision) {
   auto env = std::make_shared<Env>(nullptr);
   auto visitor = ASTVisitor(env);
 
-  auto lexer = Lexer("(/ 336 8)");
-  auto tokens = lexer.tokenize();
-  auto parser = Parser(tokens);
-  auto result = parser.parse()->accept(visitor);
-  EXPECT_EQ("42", result->inspect());
+  EXPECT_EQ("42", interpret("(/ 336 8)", visitor));
 }
 
 TEST(ParserTest, DefinSymbol) {

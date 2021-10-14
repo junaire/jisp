@@ -14,6 +14,7 @@ int main() {
   linenoise::LoadHistory(path);
 
   auto env = std::make_shared<Env>(nullptr);
+  auto lexer = Lexer();
   auto visitor = ASTVisitor(env);
   initBuiltins(*env);
 
@@ -32,9 +33,7 @@ int main() {
       continue;
     }
 
-    auto lexer = Lexer(line);
-
-    auto parser = Parser(lexer.tokenize());
+    auto parser = Parser(lexer.tokenize(line));
 
     auto result = parser.parse()->accept(visitor);
 
