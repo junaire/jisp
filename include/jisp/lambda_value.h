@@ -17,11 +17,11 @@ class LambdaValue final : public Value {
         body(std::move(b)),
         Value(ValueType::LAMBDA),
         // create a new environment
-        env(std::make_unique<Env>(par)){};
+        env(std::make_shared<Env>(par)){};
 
   std::string inspect() override { return "<lambda>"; };
   std::unique_ptr<Value> accept(ASTVisitor& visitor) override;
-  [[nodiscard]] virtual bool isLiteral() const override { return false; }
+  [[nodiscard]] bool isLiteral() const override { return false; }
   SexprValue* getFormals() { return formals->toSexpr(); }
   SexprValue* getBody() { return body->toSexpr(); }
 
@@ -36,7 +36,7 @@ class LambdaValue final : public Value {
   std::unique_ptr<Value> eval();
 
  private:
-  std::unique_ptr<Env> env;
+  std::shared_ptr<Env> env;
   std::unique_ptr<Value> formals;
   std::unique_ptr<Value> body;
 };
