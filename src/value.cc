@@ -1,4 +1,5 @@
 #include "jisp/ast_visitor.h"
+#include "jisp/error_value.h"
 #include "jisp/function_value.h"
 #include "jisp/lambda_value.h"
 #include "jisp/number_value.h"
@@ -30,6 +31,10 @@ std::unique_ptr<Value> LambdaValue::accept(ASTVisitor& visitor) {
   return visitor.visit(this);
 }
 
+std::unique_ptr<Value> ErrorValue::accept(ASTVisitor& visitor) {
+  return visitor.visit(this);
+}
+
 NumberValue* Value::toNumber() { return dynamic_cast<NumberValue*>(this); }
 
 StringValue* Value::toString() { return dynamic_cast<StringValue*>(this); }
@@ -43,6 +48,8 @@ LambdaValue* Value::toLambda() { return dynamic_cast<LambdaValue*>(this); }
 FunctionValue* Value::toFunction() {
   return dynamic_cast<FunctionValue*>(this);
 }
+
+ErrorValue* Value::toError() { return dynamic_cast<ErrorValue*>(this); }
 
 std::unique_ptr<Value> LambdaValue::eval() {
   // FIXME: env can be shared

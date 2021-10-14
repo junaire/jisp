@@ -1,7 +1,7 @@
 #ifndef JISP_TYPES_H_
 #define JISP_TYPES_H_
 
-enum class ValueType { NUMBER, STRING, SYMBOL, FUNCTION, LAMBDA, SEXPR };
+enum class ValueType { NUMBER, STRING, SYMBOL, FUNCTION, LAMBDA, SEXPR, ERROR };
 
 enum class TokenType {
   STRING,

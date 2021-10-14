@@ -72,3 +72,10 @@ TEST(JispTest, LambdaTest) {
   interpret("(define func (lambda (x y) (* x y)))", visitor);
   EXPECT_EQ("42", interpret("(func 21 2)", visitor));
 }
+
+TEST(JispTest, DivideByZeroTest) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+  initBuiltins(*env);
+  EXPECT_EQ("Error: Dividend can not be zero", interpret("(/ 0 42)", visitor));
+}

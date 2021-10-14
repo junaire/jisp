@@ -3,6 +3,7 @@
 #include <cassert>
 #include <memory>
 
+#include "jisp/error_value.h"
 #include "jisp/function_value.h"
 #include "jisp/lambda_value.h"
 #include "jisp/number_value.h"
@@ -32,6 +33,10 @@ std::unique_ptr<Value> ASTVisitor::visit(SymbolValue* sym) {
 
 std::unique_ptr<Value> ASTVisitor::visit(LambdaValue* lambda) {
   return lambda->clone();
+}
+
+std::unique_ptr<Value> ASTVisitor::visit(ErrorValue* error) {
+  return error->clone();
 }
 
 std::unique_ptr<Value> ASTVisitor::visit(SexprValue* sexpr) {

@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "jisp/error_value.h"
 #include "jisp/function_value.h"
 #include "jisp/lambda_value.h"
 #include "jisp/number_value.h"
@@ -10,27 +11,33 @@
 
 std::unique_ptr<Value> builtinOperators(Env& env, Value* vp, const char* op) {
   auto* sexpr = vp->toSexpr();
-  int result = sexpr->pop(0)->toNumber()->getValue();
+  int result = 0;
   if (strcmp(op, "+") == 0) {
+    result = sexpr->pop(0)->toNumber()->getValue();
     for (int i = 0; i < sexpr->size(); i++) {
       result += sexpr->at(i)->toNumber()->getValue();
     }
   }
 
   if (strcmp(op, "-") == 0) {
+    result = sexpr->pop(0)->toNumber()->getValue();
     for (int i = 0; i < sexpr->size(); i++) {
       result -= sexpr->at(i)->toNumber()->getValue();
     }
   }
 
   if (strcmp(op, "*") == 0) {
+    result = sexpr->pop(0)->toNumber()->getValue();
     for (int i = 0; i < sexpr->size(); i++) {
       result *= sexpr->at(i)->toNumber()->getValue();
     }
   }
 
   if (strcmp(op, "/") == 0) {
-    // TODO(Jun): throw an error when dividend is 0
+    result = sexpr->pop(0)->toNumber()->getValue();
+    if (result == 0) {
+      return std::make_unique<ErrorValue>("Dividend can not be zero");
+    }
     for (int i = 0; i < sexpr->size(); i++) {
       result /= sexpr->at(i)->toNumber()->getValue();
     }
