@@ -42,6 +42,7 @@ int main() {
       if (!result->toSexpr()->empty()) {
         std::cout << result->inspect() << "\n";
       }
+      std::cout << "\n";
     } else {
       std::cout << result->inspect() << "\n";
     }

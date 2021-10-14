@@ -13,7 +13,30 @@
 #include "jisp/symbol_value.h"
 #include "jisp/types.h"
 
-TEST(JispTest, LexerTest) {
+std::string interpret(const std::string& str, ASTVisitor& visitor) {
+  auto lexer = Lexer(str);
+  auto parser = Parser(lexer.tokenize());
+  auto result = parser.parse();
+  return result->accept(visitor)->inspect();
+}
+
+TEST(LexerTest, EmptyInput) {
+  auto lexer = Lexer(" ");
+  auto tokens = lexer.tokenize();
+  EXPECT_EQ(0, tokens.size());
+}
+
+TEST(LexerTest, SimpleArithmeticOperation) {
+  auto lexer = Lexer("( + 20 22 )");
+  auto tokens = lexer.tokenize();
+  EXPECT_EQ("(", tokens[0].getValue());
+  EXPECT_EQ("+", tokens[1].getValue());
+  EXPECT_EQ("20", tokens[2].getValue());
+  EXPECT_EQ("22", tokens[3].getValue());
+  EXPECT_EQ(")", tokens[4].getValue());
+}
+
+TEST(LexerTest, ComplexArithmeticOperation) {
   auto lexer = Lexer("( + 1 ( - 2 3))");
   auto tokens = lexer.tokenize();
   EXPECT_EQ("(", tokens[0].getValue());
@@ -27,45 +50,85 @@ TEST(JispTest, LexerTest) {
   EXPECT_EQ(")", tokens[8].getValue());
 }
 
-TEST(JispTest, ParserTest) {
-  auto lexer = Lexer("(+1 (- 244 3) ( * 5 6))");
+TEST(ParserTest, EchoBack) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+  initBuiltins(*env);
+  EXPECT_EQ("42", interpret("42", visitor));
+  EXPECT_EQ("( 1 2 3 )", interpret("(1 2 3      )", visitor));
+}
+
+TEST(ParserTest, SimpleAddition) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+
+  auto lexer = Lexer("(+ 40 2)");
   auto tokens = lexer.tokenize();
   auto parser = Parser(tokens);
-  auto ast = parser.parse();
-  auto* sexpr = ast->toSexpr();
-
-  EXPECT_EQ("+", sexpr->at(0)->toFunction()->getName());
-
-  EXPECT_EQ("1", std::to_string(sexpr->at(1)->toNumber()->getValue()));
-
-  auto* subSexpr1 = sexpr->at(2)->toSexpr();
-
-  EXPECT_EQ("-", subSexpr1->at(0)->toFunction()->getName());
-
-  EXPECT_EQ("244", std::to_string(subSexpr1->at(1)->toNumber()->getValue()));
-
-  EXPECT_EQ("3", std::to_string(subSexpr1->at(2)->toNumber()->getValue()));
-
-  auto* subSexpr2 = sexpr->at(3)->toSexpr();
-
-  EXPECT_EQ("*", subSexpr2->at(0)->toFunction()->getName());
-  EXPECT_EQ("5", std::to_string(subSexpr2->at(1)->toNumber()->getValue()));
-  EXPECT_EQ("6", std::to_string(subSexpr2->at(2)->toNumber()->getValue()));
+  auto result = parser.parse()->accept(visitor);
+  EXPECT_EQ("42", result->inspect());
 }
 
-std::string interpret(const std::string& str, ASTVisitor& visitor) {
-  auto lexer = Lexer(str);
-  auto parser = Parser(lexer.tokenize());
-  auto result = parser.parse();
-  return result->accept(visitor)->inspect();
+TEST(ParserTest, SimpleSubtraction) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+
+  auto lexer = Lexer("(- 48 6)");
+  auto tokens = lexer.tokenize();
+  auto parser = Parser(tokens);
+  auto result = parser.parse()->accept(visitor);
+  EXPECT_EQ("42", result->inspect());
 }
 
-TEST(JispTest, ASTVisitorTest) {
-  auto visitor = ASTVisitor(std::make_unique<Env>(nullptr));
-  EXPECT_EQ("3", interpret("(+ 1 2)", visitor));
+TEST(ParserTest, SimpleMultiplication) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+
+  auto lexer = Lexer("(* 6 7)");
+  auto tokens = lexer.tokenize();
+  auto parser = Parser(tokens);
+  auto result = parser.parse()->accept(visitor);
+  EXPECT_EQ("42", result->inspect());
 }
 
-TEST(JispTest, LambdaTest) {
+TEST(ParserTest, SimpleDivision) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+
+  auto lexer = Lexer("(/ 336 8)");
+  auto tokens = lexer.tokenize();
+  auto parser = Parser(tokens);
+  auto result = parser.parse()->accept(visitor);
+  EXPECT_EQ("42", result->inspect());
+}
+
+TEST(ParserTest, DefinSymbol) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+  initBuiltins(*env);
+  interpret("(define x 42)", visitor);
+  EXPECT_EQ("42", interpret("x", visitor));
+}
+
+TEST(ParserTest, PrintTest) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+  initBuiltins(*env);
+  testing::internal::CaptureStdout();
+  interpret("(print 42)", visitor);
+  EXPECT_EQ("42", testing::internal::GetCapturedStdout());
+
+  testing::internal::CaptureStdout();
+  interpret("(print (* 6 7))", visitor);
+  EXPECT_EQ("42", testing::internal::GetCapturedStdout());
+
+  testing::internal::CaptureStdout();
+  interpret("(define x 42)", visitor);
+  interpret("(print x)", visitor);
+  EXPECT_EQ("42", testing::internal::GetCapturedStdout());
+}
+
+TEST(ParserTest, LambdaTest) {
   auto env = std::make_shared<Env>(nullptr);
   auto visitor = ASTVisitor(env);
   initBuiltins(*env);
@@ -73,7 +136,7 @@ TEST(JispTest, LambdaTest) {
   EXPECT_EQ("42", interpret("(func 21 2)", visitor));
 }
 
-TEST(JispTest, DivideByZeroTest) {
+TEST(ErrorTest, DivideByZeroTest) {
   auto env = std::make_shared<Env>(nullptr);
   auto visitor = ASTVisitor(env);
   initBuiltins(*env);

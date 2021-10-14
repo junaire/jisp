@@ -58,7 +58,7 @@ std::unique_ptr<Value> builtinCompare(Env& env, Value* vp, const char* op) {
 
 std::unique_ptr<Value> builtinPrint(Env& env, Value* vp) {
   if (vp->toSexpr()->size() == 1) {
-    std::cout << vp->toSexpr()->at(0)->inspect() << "\n";
+    std::cout << vp->toSexpr()->at(0)->inspect();
   }
   return std::make_unique<SexprValue>();
 }
