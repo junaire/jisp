@@ -28,6 +28,10 @@ int main() {
       break;
     }
 
+    if (line.empty()) {
+      continue;
+    }
+
     auto lexer = Lexer(line);
 
     auto parser = Parser(lexer.tokenize());
