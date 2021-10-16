@@ -1,3 +1,4 @@
+#include <concepts>
 #include <iostream>
 
 #include "jisp/ast_visitor.h"
@@ -8,6 +9,15 @@
 #include "jisp/sexpr_value.h"
 #include "linenoise.hpp"
 
+void printResult(std::movable auto&& result) {
+  if (result->isSexpr()) {
+    if (result->toSexpr()->empty()) {
+      std::cout << "\n";
+      return;
+    }
+  }
+  std::cout << result->inspect() << "\n";
+}
 int main() {
   const auto* path = "history.txt";
   // Load history
@@ -35,16 +45,7 @@ int main() {
 
     auto parser = Parser(lexer.tokenize(line));
 
-    auto result = parser.parse()->accept(visitor);
-
-    if (result->isSexpr()) {
-      if (!result->toSexpr()->empty()) {
-        std::cout << result->inspect() << "\n";
-      }
-      std::cout << "\n";
-    } else {
-      std::cout << result->inspect() << "\n";
-    }
+    printResult(parser.parse()->accept(visitor));
 
     linenoise::AddHistory(line.c_str());
   }
