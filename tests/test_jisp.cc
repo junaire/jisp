@@ -126,3 +126,13 @@ TEST(ErrorTest, DivideByZeroTest) {
   initBuiltins(*env);
   EXPECT_EQ("Error: Dividend can not be zero", interpret("(/ 0 42)", visitor));
 }
+
+TEST(ConditionTest, SimpleIf) {
+  auto env = std::make_shared<Env>(nullptr);
+  auto visitor = ASTVisitor(env);
+  initBuiltins(*env);
+  EXPECT_EQ("42", interpret("(if 1 (42) (24))", visitor));
+  EXPECT_EQ("42", interpret("(if (0) (24) (42))", visitor));
+  interpret("( define x 30)", visitor);
+  EXPECT_EQ("42", interpret("(if (x) ( + 30 12) ( -  x 56))", visitor));
+}

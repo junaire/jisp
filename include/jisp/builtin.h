@@ -18,6 +18,8 @@ std::unique_ptr<Value> builtinDefine(Env& env, Value* vp);
 // builtin function lambda
 std::unique_ptr<Value> builtinLambda(Env& env, Value* vp);
 
+std::unique_ptr<Value> builtinIf(Env& env, Value* vp);
+
 std::unique_ptr<Value> addBuiltin(const std::string& name, bool isNeedLiteral,
                                   auto&& func);
 void initBuiltins(Env& env);

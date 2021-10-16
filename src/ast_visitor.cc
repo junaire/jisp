@@ -69,6 +69,11 @@ std::unique_ptr<Value> ASTVisitor::visit(SexprValue* sexpr) {
       return fn->toFunction()->call(*enviroment, result.release());
     }
   }
+
+  if (result->size() == 1) {
+    return result->pop(0);
+  }
+
   return result;
 }
 

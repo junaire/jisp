@@ -79,6 +79,15 @@ std::unique_ptr<Value> builtinLambda(Env& env, Value* vp) {
                                        &env);
 }
 
+std::unique_ptr<Value> builtinIf(Env& env, Value* vp) {
+  auto* sexpr = vp->toSexpr();
+  if (sexpr->at(0)->toNumber()->getValue() != 0) {
+    return sexpr->at(1)->clone();
+  } else {
+    return sexpr->at(2)->clone();
+  }
+}
+
 std::unique_ptr<Value> addBuiltin(const std::string& name, bool isNeedLiteral,
                                   auto&& func) {
   return std::make_unique<FunctionValue>(name, isNeedLiteral, func);
@@ -108,5 +117,8 @@ return builtinOperators(env, vp, "/");
           }));
   env.set("print", addBuiltin("print", true, [](Env& env, Value* vp) {
             return builtinPrint(env, vp);
+          }));
+  env.set("if", addBuiltin("if", true, [](Env& env, Value* vp) {
+            return builtinIf(env, vp);
           }));
 }
