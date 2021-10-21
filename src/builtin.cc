@@ -15,21 +15,21 @@ std::unique_ptr<Value> builtinOperators(Env& env, Value* vp, const char* op) {
   if (strcmp(op, "+") == 0) {
     result = sexpr->pop(0)->toNumber()->getValue();
     for (int i = 0; i < sexpr->size(); i++) {
-      result += sexpr->at(i)->toNumber()->getValue();
+      result += sexpr->at(i).toNumber()->getValue();
     }
   }
 
   if (strcmp(op, "-") == 0) {
     result = sexpr->pop(0)->toNumber()->getValue();
     for (int i = 0; i < sexpr->size(); i++) {
-      result -= sexpr->at(i)->toNumber()->getValue();
+      result -= sexpr->at(i).toNumber()->getValue();
     }
   }
 
   if (strcmp(op, "*") == 0) {
     result = sexpr->pop(0)->toNumber()->getValue();
     for (int i = 0; i < sexpr->size(); i++) {
-      result *= sexpr->at(i)->toNumber()->getValue();
+      result *= sexpr->at(i).toNumber()->getValue();
     }
   }
 
@@ -39,7 +39,7 @@ std::unique_ptr<Value> builtinOperators(Env& env, Value* vp, const char* op) {
       return std::make_unique<ErrorValue>("Dividend can not be zero");
     }
     for (int i = 0; i < sexpr->size(); i++) {
-      result /= sexpr->at(i)->toNumber()->getValue();
+      result /= sexpr->at(i).toNumber()->getValue();
     }
   }
   return std::make_unique<NumberValue>(result);
@@ -58,14 +58,14 @@ std::unique_ptr<Value> builtinCompare(Env& env, Value* vp, const char* op) {
 
 std::unique_ptr<Value> builtinPrint(Env& env, Value* vp) {
   if (vp->toSexpr()->size() == 1) {
-    std::cout << vp->toSexpr()->at(0)->inspect();
+    std::cout << vp->toSexpr()->at(0).inspect();
   }
   return std::make_unique<SexprValue>();
 }
 
 std::unique_ptr<Value> builtinDefine(Env& env, Value* vp) {
   auto* sexpr = vp->toSexpr();
-  env.set(sexpr->at(0)->toSymbol()->getName(), std::move(sexpr->get(1)));
+  env.set(sexpr->at(0).toSymbol()->getName(), std::move(sexpr->pop(1)));
   return std::make_unique<SexprValue>();
 }
 
@@ -81,11 +81,10 @@ std::unique_ptr<Value> builtinLambda(Env& env, Value* vp) {
 
 std::unique_ptr<Value> builtinIf(Env& env, Value* vp) {
   auto* sexpr = vp->toSexpr();
-  if (sexpr->at(0)->toNumber()->getValue() != 0) {
-    return sexpr->at(1)->clone();
-  } else {
-    return sexpr->at(2)->clone();
+  if (sexpr->at(0).toNumber()->getValue() != 0) {
+    return sexpr->at(1).clone();
   }
+  return sexpr->at(2).clone();
 }
 
 std::unique_ptr<Value> addBuiltin(const std::string& name, bool isNeedLiteral,

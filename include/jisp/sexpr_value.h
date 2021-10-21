@@ -45,7 +45,7 @@ class SexprValue final : public Value {
 
   [[nodiscard]] bool isPartLiteral(int idx) {
     for (; idx < size(); idx++) {
-      if (!at(idx)->isLiteral()) {
+      if (!at(idx).isLiteral()) {
         return false;
       }
     }
@@ -69,9 +69,7 @@ class SexprValue final : public Value {
     return popEle;
   }
 
-  Value* at(size_t idx) { return elements[idx].get(); }
-
-  std::unique_ptr<Value>& get(size_t idx) { return elements[idx]; }
+  Value& at(size_t idx) { return *elements.at(idx); }
 
   std::vector<std::unique_ptr<Value>> elements;
 };
