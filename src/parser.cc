@@ -17,30 +17,30 @@ std::unique_ptr<Value> Parser::parse() {
 
 std::unique_ptr<Value> Parser::parseValue() {
   auto token = tokens[index++];
-  switch (token.getType()) {
-    case TokenType::NUMBER:
+  switch (token.getKind()) {
+    case Token::Kind::Integer:
       return std::make_unique<NumberValue>(token.getValue());
-    case TokenType::STRING:
+    case Token::Kind::String:
       return std::make_unique<StringValue>(token.getValue());
-    case TokenType::PLUS:
+    case Token::Kind::Plus:
       return std::make_unique<FunctionValue>(
           "+", true,
           [](Env& env, Value* vp) { return builtinOperators(env, vp, "+"); });
-    case TokenType::MINUS:
+    case Token::Kind::Minus:
       return std::make_unique<FunctionValue>(
           "-", true,
           [](Env& env, Value* vp) { return builtinOperators(env, vp, "-"); });
-    case TokenType::MULTIPLY:
+    case Token::Kind::Multiply:
       return std::make_unique<FunctionValue>(
           "*", true,
           [](Env& env, Value* vp) { return builtinOperators(env, vp, "*"); });
-    case TokenType::DIVIDE:
+    case Token::Kind::Divide:
       return std::make_unique<FunctionValue>(
           "/", true,
           [](Env& env, Value* vp) { return builtinOperators(env, vp, "/"); });
-    case TokenType::SYMBOL:
+    case Token::Kind::Identifier:
       return std::make_unique<SymbolValue>(token.getValue());
-    case TokenType::LBRACKET:
+    case Token::Kind::LeftCurly:
       return parseSexpr();
   }
   return nullptr;
@@ -48,7 +48,7 @@ std::unique_ptr<Value> Parser::parseValue() {
 
 std::unique_ptr<Value> Parser::parseSexpr() {
   auto sexpr = std::make_unique<SexprValue>();
-  while (tokens[index].getType() != TokenType::RBRACKET) {
+  while (tokens[index].getKind() != Token::Kind::RightCurly) {
     sexpr->push(parseValue());
   }
   if (index < tokens.size()) {

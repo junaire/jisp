@@ -14,21 +14,15 @@
 #include "jisp/types.h"
 
 std::string interpret(const std::string& str, ASTVisitor& visitor) {
-  auto lexer = Lexer();
-  auto parser = Parser(lexer.tokenize(str));
+  auto lexer = Lexer(str);
+  auto parser = Parser(lexer.tokenize());
   auto result = parser.parse();
   return result->accept(visitor)->inspect();
 }
 
-TEST(LexerTest, EmptyInput) {
-  auto lexer = Lexer();
-  auto tokens = lexer.tokenize(" ");
-  EXPECT_EQ(0, tokens.size());
-}
-
 TEST(LexerTest, SimpleArithmeticOperation) {
-  auto lexer = Lexer();
-  auto tokens = lexer.tokenize("( + 20 22 )");
+  auto lexer = Lexer("( + 20 22 )");
+  auto tokens = lexer.tokenize();
   EXPECT_EQ("(", tokens[0].getValue());
   EXPECT_EQ("+", tokens[1].getValue());
   EXPECT_EQ("20", tokens[2].getValue());
@@ -37,8 +31,8 @@ TEST(LexerTest, SimpleArithmeticOperation) {
 }
 
 TEST(LexerTest, ComplexArithmeticOperation) {
-  auto lexer = Lexer();
-  auto tokens = lexer.tokenize("( + 1 ( - 2 3))");
+  auto lexer = Lexer("( +1 ( - 2 3))");
+  auto tokens = lexer.tokenize();
   EXPECT_EQ("(", tokens[0].getValue());
   EXPECT_EQ("+", tokens[1].getValue());
   EXPECT_EQ("1", tokens[2].getValue());
@@ -48,6 +42,12 @@ TEST(LexerTest, ComplexArithmeticOperation) {
   EXPECT_EQ("3", tokens[6].getValue());
   EXPECT_EQ(")", tokens[7].getValue());
   EXPECT_EQ(")", tokens[8].getValue());
+}
+
+TEST(LexerTest, String) {
+  auto lexer = Lexer("\"This is a strig\"");
+  auto tokens = lexer.tokenize();
+  EXPECT_EQ("\"This is a string\"", tokens[0].getValue());
 }
 
 TEST(ParserTest, EchoBack) {

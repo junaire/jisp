@@ -3,7 +3,6 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "jisp/token.h"
@@ -11,20 +10,24 @@ using Tokens = std::vector<Token>;
 
 class Lexer {
  public:
-  Lexer() = default;
-  Tokens tokenize(std::string_view input);
+  explicit Lexer(std::string input) : input_(std::move(input)), position(0) {}
+  Tokens tokenize();
+  std::optional<Token> next();
 
  private:
-  std::optional<Token> lex(std::string_view code);
-  std::optional<Token> lexNumber(std::string_view code);
-  std::optional<Token> lexSymbol(std::string_view code);
-  std::optional<Token> lexString(std::string_view code);
-  std::optional<Token> lexSyntax(std::string_view code);
-  std::optional<Token> lexOperator(std::string_view code);
+  Token number();
+  Token identifier();
+  Token str();
+  Token atom(Token::Kind kind);
 
-  void skipWhiteSpace(std::string_view code);
+  void skipWhiteSpace();
   void advance();
+  char peek();
+  char get();
+
+  [[nodiscard]] static bool isValidChar(char c);
+
+  std::string input_;
   size_t position;
-  size_t length;
 };
 #endif
