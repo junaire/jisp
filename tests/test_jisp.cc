@@ -45,7 +45,7 @@ TEST(LexerTest, ComplexArithmeticOperation) {
 }
 
 TEST(LexerTest, String) {
-  auto lexer = Lexer("\"This is a strig\"");
+  auto lexer = Lexer("\"This is a string\"");
   auto tokens = lexer.tokenize();
   EXPECT_EQ("\"This is a string\"", tokens[0].getValue());
 }

@@ -40,7 +40,7 @@ std::unique_ptr<Value> Parser::parseValue() {
           [](Env& env, Value* vp) { return builtinOperators(env, vp, "/"); });
     case Token::Kind::Identifier:
       return std::make_unique<SymbolValue>(token.getValue());
-    case Token::Kind::LeftCurly:
+    case Token::Kind::LeftParen:
       return parseSexpr();
   }
   return nullptr;
@@ -48,7 +48,7 @@ std::unique_ptr<Value> Parser::parseValue() {
 
 std::unique_ptr<Value> Parser::parseSexpr() {
   auto sexpr = std::make_unique<SexprValue>();
-  while (tokens[index].getKind() != Token::Kind::RightCurly) {
+  while (tokens[index].getKind() != Token::Kind::RightParen) {
     sexpr->push(parseValue());
   }
   if (index < tokens.size()) {
