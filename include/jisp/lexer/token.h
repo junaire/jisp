@@ -6,16 +6,19 @@
 class Token {
  public:
   enum class Kind {
+    // Type
     Integer,
     Float,
     Identifier,
     String,
+
+    // Syntax
     LeftParen,
     RightParen,
     LeftSquare,
     RightSquare,
-    LeftCurly,
-    RightCurly,
+
+    // Operator
     LessThan,
     GreaterThan,
     Equal,
@@ -23,10 +26,14 @@ class Token {
     Minus,
     Multiply,
     Divide,
-    Unexpected,
+
+    // Keyword
+    Define,
+    If,
+    Function,
   };
 
-  Token(Kind kind, std::string value) : kind_(kind), value(std::move(value)) {}
+  Token(Kind kind, std::string value) : value(std::move(value)), kind_(kind) {}
 
   [[nodiscard]] const std::string& getValue() const { return value; }
 

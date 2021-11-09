@@ -1,55 +1,31 @@
-#include <concepts>
-#include <iostream>
+#include <fmt/format.h>
 
-#include "jisp/ast_visitor.h"
-#include "jisp/builtin.h"
+#include <fstream>
+
+#include "jisp/ast/ast.h"
+#include "jisp/ast/builtin.h"
+#include "jisp/ast/visitor.h"
 #include "jisp/env.h"
-#include "jisp/lexer.h"
-#include "jisp/parser.h"
-#include "jisp/sexpr_value.h"
-#include "linenoise.hpp"
+#include "jisp/lexer/lexer.h"
+#include "jisp/parser/parser.h"
 
-void printResult(std::movable auto&& result) {
-  if (result->isSexpr()) {
-    if (result->toSexpr()->empty()) {
-      std::cout << "\n";
-      return;
-    }
-  }
-  std::cout << result->inspect() << "\n";
+int main(int argc, char** argv) {
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
+
+  const char* contents = R"(
+      "(fn func[a b] ( if (a) (* a b) ( + a b))) (func(1 5)))";
+  /*
+  std::ifstream file{argv[1]};
+  std::string contents{std::istreambuf_iterator<char>(file),
+                       std::istreambuf_iterator<char>()};
+
+  */
+  auto lexer = Lexer(std::move(contents));
+
+  auto parser = Parser(lexer.tokenize());
+
+  auto result = parser.parse()->exec(visitor);
+
+  result.print();
 }
-int main() {
-  const auto* path = "history.txt";
-  // Load history
-  linenoise::LoadHistory(path);
-
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
-  initBuiltins(*env);
-
-  fmt::print("Jun's own Lisp\n");
-
-  while (true) {
-    // Read line
-    std::string line;
-    auto quit = linenoise::Readline("Jisp> ", line);
-
-    if (quit) {
-      break;
-    }
-
-    if (line.empty()) {
-      continue;
-    }
-
-    auto lexer = Lexer(std::move(line));
-    auto parser = Parser(lexer.tokenize());
-
-    printResult(parser.parse()->accept(visitor));
-
-    linenoise::AddHistory(line.c_str());
-  }
-  // Save history
-  linenoise::SaveHistory(path);
-}
-

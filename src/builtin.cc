@@ -1,123 +1,128 @@
-#include "jisp/builtin.h"
+#include "jisp/ast/builtin.h"
 
-#include <iostream>
+#include <fmt/format.h>
 
-#include "jisp/error_value.h"
-#include "jisp/function_value.h"
-#include "jisp/lambda_value.h"
-#include "jisp/number_value.h"
-#include "jisp/sexpr_value.h"
-#include "jisp/symbol_value.h"
+#include <cassert>
 
-std::unique_ptr<Value> builtinOperators(Env& env, Value* vp, const char* op) {
-  auto* sexpr = vp->toSexpr();
-  int result = 0;
-  if (strcmp(op, "+") == 0) {
-    result = sexpr->pop(0)->toNumber()->getValue();
-    for (int i = 0; i < sexpr->size(); i++) {
-      result += sexpr->at(i).toNumber()->getValue();
-    }
+#include "jisp/ast/ast.h"
+#include "jisp/ast/visitor.h"
+#include "jisp/value/value.h"
+
+Value Add::apply(Visitor& visitor, std::vector<Value>& args) {
+  assert(!args.empty());
+  int res = 0;
+  for (const auto& arg : args) {
+    res += arg.toNumber();
   }
-
-  if (strcmp(op, "-") == 0) {
-    result = sexpr->pop(0)->toNumber()->getValue();
-    for (int i = 0; i < sexpr->size(); i++) {
-      result -= sexpr->at(i).toNumber()->getValue();
-    }
-  }
-
-  if (strcmp(op, "*") == 0) {
-    result = sexpr->pop(0)->toNumber()->getValue();
-    for (int i = 0; i < sexpr->size(); i++) {
-      result *= sexpr->at(i).toNumber()->getValue();
-    }
-  }
-
-  if (strcmp(op, "/") == 0) {
-    result = sexpr->pop(0)->toNumber()->getValue();
-    if (result == 0) {
-      return std::make_unique<ErrorValue>("Dividend can not be zero");
-    }
-    for (int i = 0; i < sexpr->size(); i++) {
-      result /= sexpr->at(i).toNumber()->getValue();
-    }
-  }
-  return std::make_unique<NumberValue>(result);
+  return Value(res);
 }
 
-std::unique_ptr<Value> builtinCompare(Env& env, Value* vp, const char* op) {
-  auto* sexpr = vp->toSexpr();
-  if (strcmp(op, "==") == 0) {
-    return std::make_unique<NumberValue>(1);
+Value Sub::apply(Visitor& visitor, std::vector<Value>& args) {
+  assert(!args.empty());
+  auto beg = args.cbegin();
+  int res = (beg++)->toNumber();
+  for (; beg != args.cend(); beg++) {
+    res -= beg->toNumber();
   }
-  if (strcmp(op, "!=") == 0) {
-    return std::make_unique<NumberValue>(0);
+  return Value(res);
+}
+
+Value Multiply::apply(Visitor& visitor, std::vector<Value>& args) {
+  int res = 1;
+  for (const auto& arg : args) {
+    res *= arg.toNumber();
   }
-  return nullptr;
+  return Value(res);
 }
 
-std::unique_ptr<Value> builtinPrint(Env& env, Value* vp) {
-  if (vp->toSexpr()->size() == 1) {
-    std::cout << vp->toSexpr()->at(0).inspect();
+Value Divide::apply(Visitor& visitor, std::vector<Value>& args) {
+  assert(!args.empty());
+  auto beg = args.cbegin();
+  int res = (beg++)->toNumber();
+  assert(res != 0);
+  for (; beg != args.cend(); beg++) {
+    res /= beg->toNumber();
   }
-  return std::make_unique<SexprValue>();
+  return Value(res);
 }
 
-std::unique_ptr<Value> builtinDefine(Env& env, Value* vp) {
-  auto* sexpr = vp->toSexpr();
-  env.set(sexpr->at(0).toSymbol()->getName(), std::move(sexpr->pop(1)));
-  return std::make_unique<SexprValue>();
-}
-
-std::unique_ptr<Value> builtinLambda(Env& env, Value* vp) {
-  auto* sexpr = vp->toSexpr();
-
-  auto formals = sexpr->pop(0);
-  auto body = sexpr->pop(0);
-
-  return std::make_unique<LambdaValue>(std::move(formals), std::move(body),
-                                       &env);
-}
-
-std::unique_ptr<Value> builtinIf(Env& env, Value* vp) {
-  auto* sexpr = vp->toSexpr();
-  if (sexpr->at(0).toNumber()->getValue() != 0) {
-    return sexpr->at(1).clone();
+Value Greater::apply(Visitor& visitor, std::vector<Value>& args) {
+  if (args.size() != 2) {
+    assert(false);
   }
-  return sexpr->at(2).clone();
+
+  auto lhs = args[0].toNumber();
+  auto rhs = args[1].toNumber();
+
+  return Value(lhs > rhs);
 }
 
-std::unique_ptr<Value> addBuiltin(const std::string& name, bool isNeedLiteral,
-                                  auto&& func) {
-  return std::make_unique<FunctionValue>(name, isNeedLiteral, func);
+Value Less::apply(Visitor& visitor, std::vector<Value>& args) {
+  if (args.size() != 2) {
+    assert(false);
+  }
+
+  auto lhs = args[0].toNumber();
+  auto rhs = args[1].toNumber();
+
+  return Value(lhs < rhs);
 }
 
-void initBuiltins(Env& env) {
-  /*
-addBuiltin("+", true, [](Env& env, Value* vp) {
-return builtinOperators(env, vp, "+");
-});
-addBuiltin("-", true, [](Env& env, Value* vp) {
-return builtinOperators(env, vp, "-");
-});
-addBuiltin("*", true, [](Env& env, Value* vp) {
-return builtinOperators(env, vp, "*");
-});
-addBuiltin("/", true, [](Env& env, Value* vp) {
-return builtinOperators(env, vp, "/");
-});
-*/
+Value GreaterEqual::apply(Visitor& visitor, std::vector<Value>& args) {
+  if (args.size() != 2) {
+    assert(false);
+  }
 
-  env.set("lambda", addBuiltin("lambda", false, [](Env& env, Value* vp) {
-            return builtinLambda(env, vp);
-          }));
-  env.set("define", addBuiltin("define", false, [](Env& env, Value* vp) {
-            return builtinDefine(env, vp);
-          }));
-  env.set("print", addBuiltin("print", true, [](Env& env, Value* vp) {
-            return builtinPrint(env, vp);
-          }));
-  env.set("if", addBuiltin("if", true, [](Env& env, Value* vp) {
-            return builtinIf(env, vp);
-          }));
+  auto lhs = args[0].toNumber();
+  auto rhs = args[1].toNumber();
+
+  return Value(lhs >= rhs);
+}
+
+Value LessEqual::apply(Visitor& visitor, std::vector<Value>& args) {
+  if (args.size() != 2) {
+    assert(false);
+  }
+
+  auto lhs = args[0].toNumber();
+  auto rhs = args[1].toNumber();
+
+  return Value(lhs <= rhs);
+}
+
+Value Equal::apply(Visitor& visitor, std::vector<Value>& args) {
+  assert(args.size() == 2);
+
+  // TODO(Jun): let Value return the variant, and use std::visit()
+  auto lhs = args[0].toNumber();
+  auto rhs = args[1].toNumber();
+
+  return Value(lhs == rhs);
+}
+
+Value NotEqual::apply(Visitor& visitor, std::vector<Value>& args) {
+  assert(args.size() == 2);
+
+  auto lhs = args[0].toNumber();
+  auto rhs = args[1].toNumber();
+
+  return Value(lhs != rhs);
+}
+
+Value And::apply(Visitor& visitor, std::vector<Value>& args) {
+  assert(args.size() == 2);
+
+  auto lhs = args[0].toBoolean();
+  auto rhs = args[1].toBoolean();
+
+  return Value(lhs && rhs);
+}
+
+Value Or::apply(Visitor& visitor, std::vector<Value>& args) {
+  assert(args.size() == 2);
+
+  auto lhs = args[0].toBoolean();
+  auto rhs = args[1].toBoolean();
+
+  return Value(lhs || rhs);
 }

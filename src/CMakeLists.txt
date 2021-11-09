@@ -2,9 +2,10 @@ SET(SOURCES
 	main.cc
 	lexer.cc
 	parser.cc
+	env.cc
 	builtin.cc
-	ast_visitor.cc
-	value.cc
+	ast.cc
+	visitor.cc
 )
 
 add_executable(

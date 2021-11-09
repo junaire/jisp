@@ -1,59 +1,174 @@
-#include "jisp/parser.h"
+#include "jisp/parser/parser.h"
 
-#include "jisp/builtin.h"
-#include "jisp/function_value.h"
-#include "jisp/number_value.h"
-#include "jisp/sexpr_value.h"
-#include "jisp/string_value.h"
-#include "jisp/symbol_value.h"
-#include "jisp/types.h"
+#include <cassert>
 
-std::unique_ptr<Value> Parser::parse() {
-  while (index < tokens.size()) {
-    return parseValue();
-  }
-  return nullptr;
-}
+#include "jisp/ast/ast.h"
+#include "jisp/ast/builtin.h"
 
-std::unique_ptr<Value> Parser::parseValue() {
-  auto token = tokens[index++];
-  switch (token.getKind()) {
-    case Token::Kind::Integer:
-      return std::make_unique<NumberValue>(token.getValue());
-    case Token::Kind::String:
-      return std::make_unique<StringValue>(token.getValue());
-    case Token::Kind::Plus:
-      return std::make_unique<FunctionValue>(
-          "+", true,
-          [](Env& env, Value* vp) { return builtinOperators(env, vp, "+"); });
-    case Token::Kind::Minus:
-      return std::make_unique<FunctionValue>(
-          "-", true,
-          [](Env& env, Value* vp) { return builtinOperators(env, vp, "-"); });
-    case Token::Kind::Multiply:
-      return std::make_unique<FunctionValue>(
-          "*", true,
-          [](Env& env, Value* vp) { return builtinOperators(env, vp, "*"); });
-    case Token::Kind::Divide:
-      return std::make_unique<FunctionValue>(
-          "/", true,
-          [](Env& env, Value* vp) { return builtinOperators(env, vp, "/"); });
-    case Token::Kind::Identifier:
-      return std::make_unique<SymbolValue>(token.getValue());
-    case Token::Kind::LeftParen:
-      return parseSexpr();
-  }
-  return nullptr;
-}
+const Token& Parser::currentToken() const { return tokens.at(index); }
 
-std::unique_ptr<Value> Parser::parseSexpr() {
-  auto sexpr = std::make_unique<SexprValue>();
-  while (tokens[index].getKind() != Token::Kind::RightParen) {
-    sexpr->push(parseValue());
-  }
+Token Parser::getToken() { return tokens.at(index++); }
+
+void Parser::advance() {
   if (index < tokens.size()) {
-    index++;
+    ++index;
+  }
+}
+
+bool Parser::isEnd() const { return index == tokens.size(); }
+
+bool Parser::isCallExpr() const {
+  return funcTbl.contains(currentToken().getValue());
+}
+
+std::unique_ptr<ASTNode> Parser::parseBlock(bool keepSingleNode) {
+  // skip `(`
+  advance();
+
+  if (isCallExpr()) {
+    auto node = parseCallExpression();
+    advance();
+    return node;
   }
 
-  return sexpr;
+  auto block = std::make_unique<Block>();
+
+  while (currentToken().isNot(Token::Kind::RightParen)) {
+    block->append(parseNode());
+  }
+
+  // eat `)`
+  advance();
+
+  if (keepSingleNode) {
+    // If there is only one element in the list,
+    // return it without block
+    if (block->size() == 1) {
+      return block->drop();
+    }
+  }
+  return block;
+}
+
+std::unique_ptr<ASTNode> Parser::parseList() {
+  // skip `[`
+  advance();
+
+  auto list = std::make_unique<List>();
+
+  while (currentToken().isNot(Token::Kind::RightSquare)) {
+    list->append(parseNode());
+  }
+
+  // eat `]`
+  advance();
+
+  return list;
+}
+
+std::unique_ptr<ASTNode> Parser::parseFunction() {
+  assert(currentToken().is(Token::Kind::Function));
+
+  advance();
+  auto fnName = getToken().getValue();
+
+  auto callee = std::make_unique<Identifier>(fnName);
+  auto args = parseList();
+  auto body = parseBlock(false);
+
+  auto func = std::make_unique<Function>(std::move(callee), std::move(args),
+                                         std::move(body));
+
+  // store function names, so we can parse CallExpression
+  funcTbl.emplace(fnName);
+  return func;
+}
+
+std::unique_ptr<ASTNode> Parser::parseDeclaretion() {
+  assert(currentToken().is(Token::Kind::Define));
+
+  advance();
+  auto id = parseNode();
+  auto init = parseNode();
+
+  return std::make_unique<Declaretion>(std::move(id), std::move(init));
+}
+
+std::unique_ptr<ASTNode> Parser::parseBinaryExpression() {
+  auto op = parseBuiltin();
+  auto lhs = parseNode();
+  auto rhs = parseNode();
+
+  return std::make_unique<BinaryExpression>(std::move(op), std::move(lhs),
+                                            std::move(rhs));
+}
+
+std::unique_ptr<ASTNode> Parser::parseIfExpression() {
+  auto test = parseBlock(false);
+  auto consequent = parseBlock(false);
+  auto alternate = parseBlock(false);
+
+  return std::make_unique<IfExpression>(std::move(test), std::move(consequent),
+                                        std::move(alternate));
+}
+
+std::unique_ptr<ASTNode> Parser::parseCallExpression() {
+  auto callee = std::make_unique<Identifier>(getToken().getValue());
+  auto args = parseBlock(false);
+  return std::make_unique<CallExpression>(std::move(callee), std::move(args));
+}
+
+// `parseNode()` is not responsible for advance the token
+std::unique_ptr<ASTNode> Parser::parseNode() {
+  switch (currentToken().getKind()) {
+    case Token::Kind::Integer:
+      return std::make_unique<Literal>(std::stoi(getToken().getValue()));
+    case Token::Kind::String:
+      return std::make_unique<Literal>(getToken().getValue());
+    case Token::Kind::Identifier:
+      return std::make_unique<Identifier>(getToken().getValue());
+
+    case Token::Kind::Plus:
+    case Token::Kind::Minus:
+    case Token::Kind::Multiply:
+    case Token::Kind::Divide:
+      return parseBinaryExpression();
+
+    case Token::Kind::Define:
+      return parseDeclaretion();
+    case Token::Kind::Function:
+      return parseFunction();
+    case Token::Kind::If:
+      return parseIfExpression();
+
+    case Token::Kind::LeftParen:
+      return parseBlock();
+    case Token::Kind::LeftSquare:
+      return parseList();
+  }
+  return nullptr;
+}
+
+std::unique_ptr<Builtin> Parser::parseBuiltin() {
+  switch (getToken().getKind()) {
+    case Token::Kind::Plus:
+      return std::make_unique<Add>();
+    case Token::Kind::Minus:
+      return std::make_unique<Sub>();
+    case Token::Kind::Multiply:
+      return std::make_unique<Multiply>();
+    case Token::Kind::Divide:
+      return std::make_unique<Divide>();
+    default:
+      assert(false);
+  }
+}
+
+std::unique_ptr<ASTNode> Parser::parse() {
+  // So that we can have more complex program
+  auto program = std::make_unique<Block>();
+  while (!isEnd()) {
+    program->append(parseNode());
+  }
+  return program;
 }

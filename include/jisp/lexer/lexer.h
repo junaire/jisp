@@ -5,7 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "jisp/token.h"
+#include "jisp/lexer/token.h"
+
 using Tokens = std::vector<Token>;
 
 class Lexer {
@@ -16,7 +17,7 @@ class Lexer {
 
  private:
   Token number();
-  Token identifier();
+  Token identifierOrKeyword();
   Token str();
   Token atom(Token::Kind kind);
 

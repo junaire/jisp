@@ -1,5 +1,6 @@
-#include "jisp/lexer.h"
+#include "jisp/lexer/lexer.h"
 
+// FIXME: tokenize() works poorly when we have whitespace in the end
 Tokens Lexer::tokenize() {
   std::vector<Token> tokens;
   while (position < input_.length()) {
@@ -14,7 +15,10 @@ void Lexer::advance() {
   }
 }
 
-char Lexer::peek() { return input_[position]; }
+char Lexer::peek() {
+  // FIXME: This is unsafe, need refactor
+  return input_[position];
+}
 
 char Lexer::get() { return input_.at(position++); }
 
@@ -52,7 +56,7 @@ Token Lexer::number() {
 }
 
 Token Lexer::str() {
-  std::string value{"\""};
+  std::string value;
   advance();
   while (true) {
     char c = get();
@@ -62,13 +66,12 @@ Token Lexer::str() {
     value += c;
   }
 
-  value += "\"";
-
   return Token(Token::Kind::String, std::move(value));
 }
 
-Token Lexer::identifier() {
+Token Lexer::identifierOrKeyword() {
   std::string value{get()};
+  Token::Kind kind{Token::Kind::Identifier};
 
   while (true) {
     char c = peek();
@@ -79,7 +82,14 @@ Token Lexer::identifier() {
     advance();
   }
 
-  return Token(Token::Kind::Identifier, std::move(value));
+  // TODO(Jun): need refactor, move keywords lexing to another part
+  if (value == "def") {
+    kind = Token::Kind::Define;
+  } else if (value == "fn") {
+    kind = Token::Kind::Function;
+  }
+
+  return Token(kind, std::move(value));
 }
 
 void Lexer::skipWhiteSpace() {
@@ -97,7 +107,6 @@ Token Lexer::atom(Token::Kind kind) {
 
 std::optional<Token> Lexer::next() {
   skipWhiteSpace();
-
   switch (peek()) {
     case 'a':
     case 'b':
@@ -151,7 +160,7 @@ std::optional<Token> Lexer::next() {
     case 'X':
     case 'Y':
     case 'Z':
-      return identifier();
+      return identifierOrKeyword();
     case '0':
     case '1':
     case '2':
@@ -171,10 +180,7 @@ std::optional<Token> Lexer::next() {
       return atom(Token::Kind::LeftSquare);
     case ']':
       return atom(Token::Kind::RightSquare);
-    case '{':
-      return atom(Token::Kind::LeftCurly);
-    case '}':
-      return atom(Token::Kind::RightCurly);
+    // TODO(Jun): support operators like `<=`, `>=`, `!=`, `==`
     case '<':
       return atom(Token::Kind::LessThan);
     case '>':
@@ -191,18 +197,8 @@ std::optional<Token> Lexer::next() {
       return atom(Token::Kind::Divide);
     case '"':
       return str();
-      /*
-        case '.':
-          return atom(Token::Kind::Dot);
-        case ',':
-          return atom(Token::Kind::Comma);
-        case ':':
-          return atom(Token::Kind::Colon);
-        case ';':
-          return atom(Token::Kind::Semicolon);
-      */
     default:
-      return atom(Token::Kind::Unexpected);
+      return std::nullopt;
   }
 }
 
