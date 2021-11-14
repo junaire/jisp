@@ -20,7 +20,7 @@ TEST(LexerTest, SimpleArithmeticOperation) {
 }
 
 TEST(LexerTest, ComplexArithmeticOperation) {
-  auto lexer = Lexer("( +1 ( - 2 3))");
+  auto lexer = Lexer("( +1 ( - 2 3))    ");
   auto tokens = lexer.tokenize();
   EXPECT_EQ("(", tokens[0].getValue());
   EXPECT_EQ("+", tokens[1].getValue());
@@ -39,91 +39,70 @@ TEST(LexerTest, String) {
   EXPECT_EQ("This is a string", tokens[0].getValue());
 }
 
-/*
+std::string interpret(const std::string& input, Visitor& visitor) {
+  Lexer lexer{input};
+  Parser parser{lexer.tokenize()};
+  auto result = parser.parse()->exec(visitor);
+  result.print();
+  testing::internal::CaptureStdout();
+  result.print();
+  return testing::internal::GetCapturedStdout();
+}
+
 TEST(ParserTest, EchoBack) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
-  initBuiltins(*env);
-  EXPECT_EQ("42", interpret("42", visitor));
-  EXPECT_EQ("( 1 2 3 )", interpret("(1 2 3      )", visitor));
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
+  EXPECT_EQ("42\n", interpret("42", visitor));
+  EXPECT_EQ("Hello\n", interpret("\"Hello\"", visitor));
 }
 
 TEST(ParserTest, SimpleAddition) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
 
-  EXPECT_EQ("42", interpret("(+ 40 2)", visitor));
+  EXPECT_EQ("42\n", interpret("(+ 40 2)  ", visitor));
 }
 
 TEST(ParserTest, SimpleSubtraction) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
 
-  EXPECT_EQ("42", interpret("(- 48 6)", visitor));
+  EXPECT_EQ("42\n", interpret("(- 48 6)", visitor));
 }
 
 TEST(ParserTest, SimpleMultiplication) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
 
-  EXPECT_EQ("42", interpret("(* 6 7)", visitor));
+  EXPECT_EQ("42\n", interpret("(* 6 7)", visitor));
 }
 
 TEST(ParserTest, SimpleDivision) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
 
-  EXPECT_EQ("42", interpret("(/ 336 8)", visitor));
+  EXPECT_EQ("42\n", interpret("(/ 336 8)", visitor));
 }
 
 TEST(ParserTest, DefinSymbol) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
-  initBuiltins(*env);
-  interpret("(define x 42)", visitor);
-  EXPECT_EQ("42", interpret("x", visitor));
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
+  interpret("(def x 42)", visitor);
+  EXPECT_EQ("42\n", interpret("(x)", visitor));
 }
 
-TEST(ParserTest, PrintTest) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
-  initBuiltins(*env);
-  testing::internal::CaptureStdout();
-  interpret("(print 42)", visitor);
-  EXPECT_EQ("42", testing::internal::GetCapturedStdout());
-
-  testing::internal::CaptureStdout();
-  interpret("(print (* 6 7))", visitor);
-  EXPECT_EQ("42", testing::internal::GetCapturedStdout());
-
-  testing::internal::CaptureStdout();
-  interpret("(define x 42)", visitor);
-  interpret("(print x)", visitor);
-  EXPECT_EQ("42", testing::internal::GetCapturedStdout());
-}
-
-TEST(ParserTest, LambdaTest) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
-  initBuiltins(*env);
-  interpret("(define func (lambda (x y) (* x y)))", visitor);
-  EXPECT_EQ("42", interpret("(func 21 2)", visitor));
-}
-
-TEST(ErrorTest, DivideByZeroTest) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
-  initBuiltins(*env);
-  EXPECT_EQ("Error: Dividend can not be zero", interpret("(/ 0 42)", visitor));
+TEST(ParserTest, Function) {
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
+  interpret(" fn func [x] ( if (x) ( + x 1) ( * x 5))", visitor);
+  EXPECT_EQ("42\n", interpret("(func (41))", visitor));
 }
 
 TEST(ConditionTest, SimpleIf) {
-  auto env = std::make_shared<Env>(nullptr);
-  auto visitor = ASTVisitor(env);
-  initBuiltins(*env);
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
   EXPECT_EQ("42", interpret("(if 1 (42) (24))", visitor));
   EXPECT_EQ("42", interpret("(if (0) (24) (42))", visitor));
-  interpret("( define x 30)", visitor);
-  EXPECT_EQ("42", interpret("(if (x) ( + 30 12) ( -  x 56))", visitor));
+  interpret("( def x 30)", visitor);
+  EXPECT_EQ("42\n", interpret("(if (x) ( + 30 12) ( -  x 56))", visitor));
 }
-*/

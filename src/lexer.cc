@@ -92,6 +92,8 @@ Token Lexer::identifierOrKeyword() {
     kind = Token::Kind::Define;
   } else if (value == "fn") {
     kind = Token::Kind::Function;
+  } else if (value == "if") {
+    kind = Token::Kind::If;
   }
 
   return Token(kind, std::move(value));

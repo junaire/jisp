@@ -104,6 +104,8 @@ std::unique_ptr<ASTNode> Parser::parseBinaryExpression() {
 }
 
 std::unique_ptr<ASTNode> Parser::parseIfExpression() {
+  assert(currentToken().getKind() == Token::Kind::If);
+  advance();
   auto test = parseBlock(false);
   auto consequent = parseBlock(false);
   auto alternate = parseBlock(false);
