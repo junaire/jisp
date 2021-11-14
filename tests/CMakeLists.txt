@@ -1,10 +1,12 @@
 add_executable(
 	test_jisp
 	${PROJECT_SOURCE_DIR}/tests/test_jisp.cc
+	${PROJECT_SOURCE_DIR}/src/ast.cc
 	${PROJECT_SOURCE_DIR}/src/lexer.cc
 	${PROJECT_SOURCE_DIR}/src/parser.cc
 	${PROJECT_SOURCE_DIR}/src/visitor.cc
 	${PROJECT_SOURCE_DIR}/src/builtin.cc
+	${PROJECT_SOURCE_DIR}/src/env.cc
 )
 
 target_include_directories(

@@ -1,6 +1,7 @@
 #include <fmt/format.h>
 
 #include <fstream>
+#include <string_view>
 
 #include "jisp/ast/ast.h"
 #include "jisp/ast/builtin.h"
@@ -9,23 +10,52 @@
 #include "jisp/lexer/lexer.h"
 #include "jisp/parser/parser.h"
 
-int main(int argc, char** argv) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+void banner() {
+  fmt::print("Jun's own Lisp\n");
+  fmt::print("Version v0.0.1\n");
+}
 
-  const char* contents = R"(
-      "(fn func[a b] ( if (a) (* a b) ( + a b))) (func(1 5)))";
-  /*
-  std::ifstream file{argv[1]};
+std::string readFile(const char* name) {
+  std::ifstream file{name};
   std::string contents{std::istreambuf_iterator<char>(file),
                        std::istreambuf_iterator<char>()};
+  return contents;
+}
 
-  */
-  auto lexer = Lexer(std::move(contents));
+bool checkFileExtension(std::string_view name) {
+  bool res = false;
+  if (name.ends_with(".jun")) {
+    res = true;
+  }
+  return res;
+}
 
-  auto parser = Parser(lexer.tokenize());
+int main(int argc, char** argv) {
+  if (argc == 1) {
+    banner();
 
-  auto result = parser.parse()->exec(visitor);
+    // TODO(Jun): Implement this
+    fmt::print("Sorry but we don't have interpreter mode now :-(");
+    return -1;
+  }
+  if (argc == 2) {
+    const auto* file = argv[1];
+    if (!checkFileExtension(file)) {
+      fmt::print("The Jisp file must have `.jun` extension!\n");
+      fmt::print("For exmaple: \n");
+      fmt::print("$ jisp awesome.jun\n");
+      return -1;
+    }
 
-  result.print();
+    auto globalEnv = std::make_unique<Env>(nullptr);
+    Visitor visitor{globalEnv.get()};
+
+    Lexer lexer{readFile(file)};
+    Parser parser{lexer.tokenize()};
+    auto result = parser.parse()->exec(visitor);
+    result.print();
+
+  } else {
+    fmt::print("Error arguments\n");
+  }
 }

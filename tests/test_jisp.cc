@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 
-TEST(a, b) { EXPECT_EQ(1, 1); }
-/*
-std::string interpret(const std::string& str, ASTVisitor& visitor) {
-  auto lexer = Lexer(str);
-  auto parser = Parser(lexer.tokenize());
-  auto result = parser.parse();
-  return result->accept(visitor)->inspect();
-}
+#include "jisp/ast/ast.h"
+#include "jisp/ast/builtin.h"
+#include "jisp/ast/visitor.h"
+#include "jisp/env.h"
+#include "jisp/lexer/lexer.h"
+#include "jisp/lexer/token.h"
+#include "jisp/parser/parser.h"
+#include "jisp/value/value.h"
 
 TEST(LexerTest, SimpleArithmeticOperation) {
   auto lexer = Lexer("( + 20 22 )");
@@ -36,9 +36,10 @@ TEST(LexerTest, ComplexArithmeticOperation) {
 TEST(LexerTest, String) {
   auto lexer = Lexer("\"This is a string\"");
   auto tokens = lexer.tokenize();
-  EXPECT_EQ("\"This is a string\"", tokens[0].getValue());
+  EXPECT_EQ("This is a string", tokens[0].getValue());
 }
 
+/*
 TEST(ParserTest, EchoBack) {
   auto env = std::make_shared<Env>(nullptr);
   auto visitor = ASTVisitor(env);

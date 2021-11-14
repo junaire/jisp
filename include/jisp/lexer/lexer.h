@@ -1,7 +1,6 @@
 #ifndef JISP_LEXER_H_
 #define JISP_LEXER_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,7 +12,7 @@ class Lexer {
  public:
   explicit Lexer(std::string input) : input_(std::move(input)), position(0) {}
   Tokens tokenize();
-  std::optional<Token> next();
+  Token next();
 
  private:
   Token number();

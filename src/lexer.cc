@@ -2,9 +2,11 @@
 
 // FIXME: tokenize() works poorly when we have whitespace in the end
 Tokens Lexer::tokenize() {
-  std::vector<Token> tokens;
-  while (position < input_.length()) {
-    tokens.push_back(*next());
+  Tokens tokens;
+  for (auto token = next();
+       !token.isOneOf(Token::Kind::End, Token::Kind::Unexpected);
+       token = next()) {
+    tokens.push_back(std::move(token));
   }
   return tokens;
 }
@@ -20,7 +22,10 @@ char Lexer::peek() {
   return input_[position];
 }
 
-char Lexer::get() { return input_.at(position++); }
+char Lexer::get() {
+  // FIXME: Never use operator[], use at() instead
+  return input_[position++];
+}
 
 bool Lexer::isValidChar(char c) {
   bool flag = false;
@@ -105,7 +110,7 @@ Token Lexer::atom(Token::Kind kind) {
   return Token(kind, std::string(1, get()));
 }
 
-std::optional<Token> Lexer::next() {
+Token Lexer::next() {
   skipWhiteSpace();
   switch (peek()) {
     case 'a':
@@ -195,10 +200,12 @@ std::optional<Token> Lexer::next() {
       return atom(Token::Kind::Multiply);
     case '/':
       return atom(Token::Kind::Divide);
+    case '\0':
+      return atom(Token::Kind::End);
     case '"':
       return str();
     default:
-      return std::nullopt;
+      return atom(Token::Kind::Unexpected);
   }
 }
 

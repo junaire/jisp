@@ -31,6 +31,9 @@ class Token {
     Define,
     If,
     Function,
+
+    End,
+    Unexpected,
   };
 
   Token(Kind kind, std::string value) : value(std::move(value)), kind_(kind) {}
