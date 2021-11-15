@@ -42,67 +42,73 @@ TEST(LexerTest, String) {
 std::string interpret(const std::string& input, Visitor& visitor) {
   Lexer lexer{input};
   Parser parser{lexer.tokenize()};
-  auto result = parser.parse()->exec(visitor);
-  result.print();
-  testing::internal::CaptureStdout();
-  result.print();
-  return testing::internal::GetCapturedStdout();
+  return parser.parse()->exec(visitor).toString();
 }
 
 TEST(ParserTest, EchoBack) {
   auto env = std::make_unique<Env>(nullptr);
   auto visitor = Visitor(env.get());
-  EXPECT_EQ("42\n", interpret("42", visitor));
-  EXPECT_EQ("Hello\n", interpret("\"Hello\"", visitor));
+  EXPECT_EQ("42", interpret("42", visitor));
+  EXPECT_EQ("Hello", interpret("\"Hello\"", visitor));
 }
 
 TEST(ParserTest, SimpleAddition) {
   auto env = std::make_unique<Env>(nullptr);
   auto visitor = Visitor(env.get());
 
-  EXPECT_EQ("42\n", interpret("(+ 40 2)  ", visitor));
+  EXPECT_EQ("42", interpret("(+ 40 2)  ", visitor));
 }
 
 TEST(ParserTest, SimpleSubtraction) {
   auto env = std::make_unique<Env>(nullptr);
   auto visitor = Visitor(env.get());
 
-  EXPECT_EQ("42\n", interpret("(- 48 6)", visitor));
+  EXPECT_EQ("42", interpret("(- 48 6)", visitor));
 }
 
 TEST(ParserTest, SimpleMultiplication) {
   auto env = std::make_unique<Env>(nullptr);
   auto visitor = Visitor(env.get());
 
-  EXPECT_EQ("42\n", interpret("(* 6 7)", visitor));
+  EXPECT_EQ("42", interpret("(* 6 7)", visitor));
 }
 
 TEST(ParserTest, SimpleDivision) {
   auto env = std::make_unique<Env>(nullptr);
   auto visitor = Visitor(env.get());
 
-  EXPECT_EQ("42\n", interpret("(/ 336 8)", visitor));
+  EXPECT_EQ("42", interpret("(/ 336 8)", visitor));
 }
 
 TEST(ParserTest, DefinSymbol) {
   auto env = std::make_unique<Env>(nullptr);
   auto visitor = Visitor(env.get());
-  interpret("(def x 42)", visitor);
-  EXPECT_EQ("42\n", interpret("(x)", visitor));
+  EXPECT_EQ("42", interpret("(def x 42) (x)", visitor));
 }
 
 TEST(ParserTest, Function) {
   auto env = std::make_unique<Env>(nullptr);
   auto visitor = Visitor(env.get());
-  interpret(" fn func [x] ( if (x) ( + x 1) ( * x 5))", visitor);
-  EXPECT_EQ("42\n", interpret("(func (41))", visitor));
+  EXPECT_EQ("42",
+            interpret("(fn func [x] ( if (x) ( + x 1) ( * x 5))) (func (41))",
+                      visitor));
 }
 
-TEST(ConditionTest, SimpleIf) {
+TEST(ConditionTest, IfExpression) {
   auto env = std::make_unique<Env>(nullptr);
   auto visitor = Visitor(env.get());
-  EXPECT_EQ("42", interpret("(if 1 (42) (24))", visitor));
+  EXPECT_EQ("42", interpret("(if (1) (42) (24))", visitor));
   EXPECT_EQ("42", interpret("(if (0) (24) (42))", visitor));
-  interpret("( def x 30)", visitor);
-  EXPECT_EQ("42\n", interpret("(if (x) ( + 30 12) ( -  x 56))", visitor));
+  EXPECT_EQ("42",
+            interpret("( def x 30) (if (x) ( + 30 12) ( -  x 56)) ", visitor));
+}
+
+TEST(LoopTest, WhileExpression) {
+  auto env = std::make_unique<Env>(nullptr);
+  auto visitor = Visitor(env.get());
+  EXPECT_EQ(
+      "42",
+      interpret(
+          "(def x 1) (def y 22) ( while ( <= x 10) ( ( += x 1) ( += y 2) y))",
+          visitor));
 }
