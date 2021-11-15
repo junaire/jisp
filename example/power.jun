@@ -1,0 +1,16 @@
+(fn power [x]
+ (
+  ( def result 1)
+  ( def iter 1)
+  (
+   while (<= iter x)
+	(
+	 ( += iter 1)
+	 ( *= result 2)
+	 result
+   )
+  )
+ )
+)
+
+(power (10))
