@@ -23,7 +23,7 @@ Value Visitor::visit(Block* node) {
 }
 
 Value Visitor::visit(BinaryExpression* node) {
-  std::vector args{node->lhs_->exec(*this), node->rhs_->exec(*this)};
+  std::vector args{node->lhs_.get(), node->rhs_.get()};
   return node->op_->apply(*this, args);
 }
 

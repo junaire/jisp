@@ -99,6 +99,8 @@ class Literal : public ASTNode {
   void dump() const override;
   Value exec(Visitor& visitor) override;
 
+  void reset(Value value) { value_ = std::move(value); }
+
  private:
   Value value_;
 };

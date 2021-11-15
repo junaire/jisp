@@ -143,6 +143,19 @@ std::unique_ptr<ASTNode> Parser::parseNode() {
     case Token::Kind::Minus:
     case Token::Kind::Multiply:
     case Token::Kind::Divide:
+    case Token::Kind::PlusAssgin:
+    case Token::Kind::MinusAssgin:
+    case Token::Kind::MultiplyAssgin:
+    case Token::Kind::DivideAssign:
+    case Token::Kind::GreaterThan:
+    case Token::Kind::LessThan:
+    case Token::Kind::GreaterEqual:
+    case Token::Kind::LessEqual:
+    case Token::Kind::Equal:
+    case Token::Kind::NotEqual:
+    case Token::Kind::And:
+    case Token::Kind::Or:
+
       return parseBinaryExpression();
 
     case Token::Kind::Define:
@@ -172,6 +185,33 @@ std::unique_ptr<Builtin> Parser::parseBuiltin() {
       return std::make_unique<Multiply>();
     case Token::Kind::Divide:
       return std::make_unique<Divide>();
+
+    case Token::Kind::PlusAssgin:
+      return std::make_unique<AddAssign>();
+    case Token::Kind::MinusAssgin:
+      return std::make_unique<SubAssign>();
+    case Token::Kind::MultiplyAssgin:
+      return std::make_unique<MultiplyAssgin>();
+    case Token::Kind::DivideAssign:
+      return std::make_unique<DivideAssign>();
+
+    case Token::Kind::GreaterThan:
+      return std::make_unique<Greater>();
+    case Token::Kind::LessThan:
+      return std::make_unique<Less>();
+    case Token::Kind::GreaterEqual:
+      return std::make_unique<GreaterEqual>();
+    case Token::Kind::LessEqual:
+      return std::make_unique<LessEqual>();
+    case Token::Kind::Equal:
+      return std::make_unique<Equal>();
+    case Token::Kind::NotEqual:
+      return std::make_unique<NotEqual>();
+    case Token::Kind::And:
+      return std::make_unique<And>();
+    case Token::Kind::Or:
+      return std::make_unique<Or>();
+
     default:
       assert(false);
   }

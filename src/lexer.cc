@@ -1,6 +1,7 @@
 #include "jisp/lexer/lexer.h"
 
-// FIXME: tokenize() works poorly when we have whitespace in the end
+#include <cassert>
+
 Tokens Lexer::tokenize() {
   Tokens tokens;
   for (auto token = next();
@@ -101,6 +102,70 @@ Token Lexer::identifierOrKeyword() {
   return Token(kind, std::move(value));
 }
 
+// Operators would be like:
+// + - * /
+// += -= *= /=
+// > <
+// >= <=
+Token Lexer::op() {
+  std::string value{get()};
+  char next{peek()};
+  if (next == '=' || next == '|' || next == '&') {
+    value += next;
+    advance();
+  }
+  if (value == "+") {
+    return Token(Token::Kind::Plus, std::move(value));
+  }
+  if (value == "-") {
+    return Token(Token::Kind::Minus, std::move(value));
+  }
+  if (value == "*") {
+    return Token(Token::Kind::Multiply, std::move(value));
+  }
+  if (value == "/") {
+    return Token(Token::Kind::Divide, std::move(value));
+  }
+  if (value == ">") {
+    return Token(Token::Kind::GreaterThan, std::move(value));
+  }
+  if (value == "<") {
+    return Token(Token::Kind::LessThan, std::move(value));
+  }
+  if (value == ">=") {
+    return Token(Token::Kind::GreaterEqual, std::move(value));
+  }
+  if (value == "<=") {
+    return Token(Token::Kind::LessEqual, std::move(value));
+  }
+  if (value == "==") {
+    return Token(Token::Kind::Equal, std::move(value));
+  }
+  if (value == "!=") {
+    return Token(Token::Kind::Equal, std::move(value));
+  }
+  if (value == "+=") {
+    return Token(Token::Kind::PlusAssgin, std::move(value));
+  }
+  if (value == "-=") {
+    return Token(Token::Kind::MinusAssgin, std::move(value));
+  }
+  if (value == "*=") {
+    return Token(Token::Kind::MultiplyAssgin, std::move(value));
+  }
+  if (value == "/=") {
+    return Token(Token::Kind::DivideAssign, std::move(value));
+  }
+  if (value == "&&") {
+    return Token(Token::Kind::And, std::move(value));
+  }
+  if (value == "||") {
+    return Token(Token::Kind::Or, std::move(value));
+  }
+
+  assert(false);
+}
+
 void Lexer::skipWhiteSpace() {
   while (true) {
     if (std::isspace(peek()) == 0) {
@@ -181,6 +246,16 @@ Token Lexer::next() {
     case '8':
     case '9':
       return number();
+    case '<':
+    case '>':
+    case '=':
+    case '+':
+    case '-':
+    case '*':
+    case '/':
+    case '|':
+    case '&':
+      return op();
     case '(':
       return atom(Token::Kind::LeftParen);
     case ')':
@@ -189,21 +264,6 @@ Token Lexer::next() {
       return atom(Token::Kind::LeftSquare);
     case ']':
       return atom(Token::Kind::RightSquare);
-    // TODO(Jun): support operators like `<=`, `>=`, `!=`, `==`
-    case '<':
-      return atom(Token::Kind::LessThan);
-    case '>':
-      return atom(Token::Kind::GreaterThan);
-    case '=':
-      return atom(Token::Kind::Equal);
-    case '+':
-      return atom(Token::Kind::Plus);
-    case '-':
-      return atom(Token::Kind::Minus);
-    case '*':
-      return atom(Token::Kind::Multiply);
-    case '/':
-      return atom(Token::Kind::Divide);
     case '\0':
       return atom(Token::Kind::End);
     case '"':

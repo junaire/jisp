@@ -18,14 +18,26 @@ class Token {
     LeftSquare,
     RightSquare,
 
-    // Operator
+    // Comparison
     LessThan,
     GreaterThan,
+    GreaterEqual,
+    LessEqual,
     Equal,
+    NotEqual,
+    // Operator
     Plus,
     Minus,
     Multiply,
     Divide,
+    PlusAssgin,
+    MinusAssgin,
+    MultiplyAssgin,
+    DivideAssign,
+
+    // Logical
+    And,
+    Or,
 
     // Keyword
     Define,

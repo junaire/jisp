@@ -19,6 +19,8 @@ class Lexer {
   Token identifierOrKeyword();
   Token str();
   Token atom(Token::Kind kind);
+  // This enable us to lex operators like `>=` , `<=` and etc
+  Token op();
 
   void skipWhiteSpace();
   void advance();

@@ -60,6 +60,10 @@ class Value {
 
   [[nodiscard]] bool isVoid() const { return kind_ == Kind::Void; }
 
+  // TODO(Jun): Now we only support reset ASTNode's value with Literal type,
+  // need to expand
+  void reset(JispValue val) { val_ = std::move(val); }
+
  private:
   JispValue val_;
   Kind kind_;
