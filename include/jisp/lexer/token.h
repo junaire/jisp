@@ -30,6 +30,7 @@ class Token {
     // Keyword
     Define,
     If,
+    While,
     Function,
 
     End,

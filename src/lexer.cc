@@ -94,6 +94,8 @@ Token Lexer::identifierOrKeyword() {
     kind = Token::Kind::Function;
   } else if (value == "if") {
     kind = Token::Kind::If;
+  } else if (value == "while") {
+    kind = Token::Kind::While;
   }
 
   return Token(kind, std::move(value));

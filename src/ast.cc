@@ -23,6 +23,10 @@ IfExpression* ASTNode::toIfExpression() {
   return static_cast<IfExpression*>(this);
 }
 
+WhileExpression* ASTNode::toWhileExpression() {
+  return static_cast<WhileExpression*>(this);
+}
+
 Declaretion* ASTNode::toDeclaretion() {
   return static_cast<Declaretion*>(this);
 }
@@ -65,6 +69,10 @@ void Identifier::dump() const { fmt::print("{}", this->name_); }
 Value IfExpression::exec(Visitor& visitor) { return visitor.visit(this); }
 
 void IfExpression::dump() const { fmt::print("IfExpression"); }
+
+Value WhileExpression::exec(Visitor& visitor) { return visitor.visit(this); }
+
+void WhileExpression::dump() const { fmt::print("WhileExpression"); }
 
 Value List::exec(Visitor& visitor) { return visitor.visit(this); }
 

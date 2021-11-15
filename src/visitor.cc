@@ -59,6 +59,14 @@ Value Visitor::visit(IfExpression* node) {
   return node->alternate_->exec(*this);
 }
 
+Value Visitor::visit(WhileExpression* node) {
+  Value ret;
+  while (node->test_->exec(*this).toBoolean()) {
+    ret = node->body_->exec(*this);
+  }
+  return ret;
+}
+
 Value Visitor::visit(Declaretion* node) {
   auto var = node->id_->toIdentifier()->name_;
   this->env->set(var, node->init_.get());

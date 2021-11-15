@@ -33,6 +33,8 @@ class Parser {
 
   std::unique_ptr<ASTNode> parseIfExpression();
 
+  std::unique_ptr<ASTNode> parseWhileExpression();
+
   std::unique_ptr<ASTNode> parseBinaryExpression();
 
   std::unique_ptr<Builtin> parseBuiltin();

@@ -8,6 +8,7 @@ class Literal;
 class Declaretion;
 class Function;
 class IfExpression;
+class WhileExpression;
 class BinaryExpression;
 class Block;
 class List;
@@ -25,6 +26,7 @@ class Visitor {
   Value visit(List* node);
   Value visit(Block* node);
   Value visit(IfExpression* node);
+  Value visit(WhileExpression* node);
   Value visit(BinaryExpression* node);
   Value visit(Function* node);
   Value visit(CallExpression* node);

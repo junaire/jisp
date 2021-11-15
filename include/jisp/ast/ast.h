@@ -10,6 +10,7 @@ class Visitor;
 class Identifier;
 class CallExpression;
 class IfExpression;
+class WhileExpression;
 class BinaryExpression;
 class Block;
 class List;
@@ -29,6 +30,7 @@ class ASTNode {
   CallExpression* toCallExpression();
   BinaryExpression* toBinaryExpression();
   IfExpression* toIfExpression();
+  WhileExpression* toWhileExpression();
   Block* toBlock();
   List* toList();
   Declaretion* toDeclaretion();
@@ -215,6 +217,21 @@ class IfExpression : public ASTNode {
   std::unique_ptr<ASTNode> test_;
   std::unique_ptr<ASTNode> consequent_;
   std::unique_ptr<ASTNode> alternate_;
+};
+
+class WhileExpression : public ASTNode {
+  friend class Visitor;
+
+ public:
+  WhileExpression(std::unique_ptr<ASTNode> test, std::unique_ptr<ASTNode> body)
+      : test_(std::move(test)), body_(std::move(body)) {}
+
+  void dump() const override;
+  Value exec(Visitor& visitor) override;
+
+ private:
+  std::unique_ptr<ASTNode> test_;
+  std::unique_ptr<ASTNode> body_;
 };
 
 #endif

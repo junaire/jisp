@@ -114,6 +114,15 @@ std::unique_ptr<ASTNode> Parser::parseIfExpression() {
                                         std::move(alternate));
 }
 
+std::unique_ptr<ASTNode> Parser::parseWhileExpression() {
+  assert(currentToken().getKind() == Token::Kind::While);
+  advance();
+  auto test = parseBlock(false);
+  auto body = parseBlock(false);
+
+  return std::make_unique<WhileExpression>(std::move(test), std::move(body));
+}
+
 std::unique_ptr<ASTNode> Parser::parseCallExpression() {
   auto callee = std::make_unique<Identifier>(getToken().getValue());
   auto args = parseBlock(false);
@@ -142,6 +151,8 @@ std::unique_ptr<ASTNode> Parser::parseNode() {
       return parseFunction();
     case Token::Kind::If:
       return parseIfExpression();
+    case Token::Kind::While:
+      return parseWhileExpression();
 
     case Token::Kind::LeftParen:
       return parseBlock();
