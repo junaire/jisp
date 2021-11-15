@@ -11,6 +11,8 @@ class Token {
     Float,
     Identifier,
     String,
+    True,
+    False,
 
     // Syntax
     LeftParen,

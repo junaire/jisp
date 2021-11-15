@@ -136,6 +136,10 @@ std::unique_ptr<ASTNode> Parser::parseNode() {
       return std::make_unique<Literal>(std::stoi(getToken().getValue()));
     case Token::Kind::String:
       return std::make_unique<Literal>(getToken().getValue());
+    case Token::Kind::True:
+      return std::make_unique<Literal>(true);
+    case Token::Kind::False:
+      return std::make_unique<Literal>(false);
     case Token::Kind::Identifier:
       return std::make_unique<Identifier>(getToken().getValue());
 
@@ -218,10 +222,11 @@ std::unique_ptr<Builtin> Parser::parseBuiltin() {
 }
 
 std::unique_ptr<ASTNode> Parser::parse() {
-  // So that we can have more complex program
   auto program = std::make_unique<Block>();
   while (!isEnd()) {
     program->append(parseNode());
   }
   return program;
 }
+
+std::unique_ptr<ASTNode> Parser::interpret() { return parseNode(); }

@@ -15,6 +15,7 @@ class Parser {
  public:
   explicit Parser(Tokens tokens) : tokens(std::move(tokens)), index(0) {}
   std::unique_ptr<ASTNode> parse();
+  std::unique_ptr<ASTNode> interpret();
 
  private:
   std::unique_ptr<ASTNode> parseNode();

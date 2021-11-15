@@ -1,6 +1,7 @@
 #include <fmt/format.h>
 
 #include <fstream>
+#include <iostream>
 #include <string_view>
 
 #include "jisp/ast/ast.h"
@@ -12,7 +13,7 @@
 
 void banner() {
   fmt::print("Jun's own Lisp\n");
-  fmt::print("Version v0.0.1\n");
+  fmt::print("Version v0.0.1\n\n");
 }
 
 std::string readFile(const char* name) {
@@ -34,9 +35,23 @@ int main(int argc, char** argv) {
   if (argc == 1) {
     banner();
 
-    // TODO(Jun): Implement this
-    fmt::print("Sorry but we don't have interpreter mode now :-(");
-    return -1;
+    auto globalEnv = std::make_unique<Env>(nullptr);
+    Visitor visitor{globalEnv.get()};
+    auto block = std::make_unique<Block>();
+
+    while (true) {
+      std::string line;
+      fmt::print("Jisp> ");
+      std::getline(std::cin, line);
+      if (line.empty()) {
+        continue;
+      }
+
+      Lexer lexer{std::move(line)};
+      Parser parser{lexer.tokenize()};
+      block->append(parser.interpret());
+      block->exec(visitor).print();
+    }
   }
   if (argc == 2) {
     const auto* file = argv[1];
@@ -52,8 +67,8 @@ int main(int argc, char** argv) {
 
     Lexer lexer{readFile(file)};
     Parser parser{lexer.tokenize()};
-    auto result = parser.parse()->exec(visitor);
-    result.print();
+
+    parser.parse()->exec(visitor).print();
 
   } else {
     fmt::print("Error arguments\n");

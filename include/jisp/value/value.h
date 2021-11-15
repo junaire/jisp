@@ -64,6 +64,19 @@ class Value {
   // need to expand
   void reset(JispValue val) { val_ = std::move(val); }
 
+  std::string toString() {
+    if (isString()) {
+      return std::get<std::string>(val_);
+    }
+    if (isBool()) {
+      return std::get<bool>(val_) ? "true" : "false";
+    }
+    if (isNumber()) {
+      return std::to_string(std::get<int>(val_));
+    }
+    return "";
+  }
+
  private:
   JispValue val_;
   Kind kind_;
