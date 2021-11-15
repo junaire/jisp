@@ -5,7 +5,7 @@
 
 ## Background
 
-Around September 2020, I saw a post called [build your own lisp](https://buildyourownlisp.com/) shared on hacker news on Twitter.
+Around June 2021, I saw a post called [build your own lisp](https://buildyourownlisp.com/) shared on hacker news on Twitter.
 This piqued my interest as I've always eager to learn about compilers.
 So I followed the book and wrote a very simple and stupid Lisp interpreter in C.
 I didn't stop there, because this little program was full of bugs like memory leaks and illegal pointer accesses.
