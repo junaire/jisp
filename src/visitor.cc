@@ -67,7 +67,7 @@ Value Visitor::visit(WhileExpression* node) {
   return ret;
 }
 
-Value Visitor::visit(Declaretion* node) {
+Value Visitor::visit(Declaration* node) {
   auto var = node->id_->toIdentifier()->name_;
   this->env->set(var, node->init_.get());
   return Value(var);

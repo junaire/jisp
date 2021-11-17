@@ -5,7 +5,7 @@ class Value;
 class ASTNode;
 class Identifier;
 class Literal;
-class Declaretion;
+class Declaration;
 class Function;
 class IfExpression;
 class WhileExpression;
@@ -31,7 +31,7 @@ class Visitor {
   Value visit(Function* node);
   Value visit(CallExpression* node);
   Value visit(Identifier* node);
-  Value visit(Declaretion* node);
+  Value visit(Declaration* node);
 
   Env* env;
 };

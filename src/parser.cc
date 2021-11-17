@@ -91,7 +91,7 @@ std::unique_ptr<ASTNode> Parser::parseDeclaretion() {
   auto id = parseNode();
   auto init = parseNode();
 
-  return std::make_unique<Declaretion>(std::move(id), std::move(init));
+  return std::make_unique<Declaration>(std::move(id), std::move(init));
 }
 
 std::unique_ptr<ASTNode> Parser::parseBinaryExpression() {

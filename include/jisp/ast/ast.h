@@ -14,7 +14,7 @@ class WhileExpression;
 class BinaryExpression;
 class Block;
 class List;
-class Declaretion;
+class Declaration;
 class Literal;
 class Function;
 class Builtin;
@@ -33,7 +33,7 @@ class ASTNode {
   WhileExpression* toWhileExpression();
   Block* toBlock();
   List* toList();
-  Declaretion* toDeclaretion();
+  Declaration* toDeclaretion();
   Literal* toLiteral();
   Function* toFunction();
 
@@ -120,7 +120,6 @@ class Block : public ASTNode {
 
   [[nodiscard]] ASTNode* at(int index) { return elem_.at(index).get(); }
 
-  // FIXME: drop the node, instead of setting the orginal value to nullptr
   std::unique_ptr<ASTNode> drop(int index = 0) {
     auto node = std::move(elem_.at(index));
     elem_.erase(elem_.begin() + index);
@@ -167,11 +166,11 @@ class CallExpression : public ASTNode {
   std::unique_ptr<ASTNode> arguments_;
 };
 
-class Declaretion : public ASTNode {
+class Declaration : public ASTNode {
   friend class Visitor;
 
  public:
-  Declaretion(std::unique_ptr<ASTNode> id, std::unique_ptr<ASTNode> init)
+  Declaration(std::unique_ptr<ASTNode> id, std::unique_ptr<ASTNode> init)
       : id_(std::move(id)), init_(std::move(init)) {}
 
   void dump() const override;

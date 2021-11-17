@@ -27,8 +27,8 @@ WhileExpression* ASTNode::toWhileExpression() {
   return static_cast<WhileExpression*>(this);
 }
 
-Declaretion* ASTNode::toDeclaretion() {
-  return static_cast<Declaretion*>(this);
+Declaration* ASTNode::toDeclaretion() {
+  return static_cast<Declaration*>(this);
 }
 
 Function* ASTNode::toFunction() { return static_cast<Function*>(this); }
@@ -54,9 +54,9 @@ Value CallExpression::exec(Visitor& visitor) { return visitor.visit(this); }
 
 void CallExpression::dump() const { fmt::print("CallExpression"); }
 
-Value Declaretion::exec(Visitor& visitor) { return visitor.visit(this); }
+Value Declaration::exec(Visitor& visitor) { return visitor.visit(this); }
 
-void Declaretion::dump() const { fmt::print("Declaretion"); }
+void Declaration::dump() const { fmt::print("Declaretion"); }
 
 Value Function::exec(Visitor& visitor) { return visitor.visit(this); }
 
