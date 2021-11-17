@@ -46,6 +46,63 @@ Jisp supports two modes, just like Python.
 When you just type `jisp` in the terminal, you will enter interaction mode.
 Or you can execute a jisp file by typing `jisp file.jun`.
 
+## Language Syntax
+
+### Variable Declara:wqtion
+
+Jisp is a dynamic type language, you can change the type of a variable at runtime.
+
+We support three types now:
+- Number(32 bit integer)
+- String
+- Boolean
+
+```
+(def x 1)
+(def x "Hello, world!")
+(def x true)
+```
+### Function Declaration
+
+```
+(fn func [x y]
+ ( + x y)
+)
+```
+### Function Call
+
+```
+(func (1 2))
+```
+
+### Branch
+
+```
+(if (true)
+  (* 6 8)
+  ( + 12 30)
+)
+```
+
+### Loop
+
+We only support `while` loop now.
+```
+(def x 1)
+(def y 1)
+
+(while
+  (<= x 10)
+   (
+     ( += x 1 )
+     ( *= y 1 )
+    y
+   )
+)
+```
+
+More examples can be found in `example/` directory.
+
 ## TODO
 Jisp is just a simple toy for myself, honestly saying it's far from done.
 
