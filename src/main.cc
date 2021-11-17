@@ -49,8 +49,9 @@ int main(int argc, char** argv) {
 
       Lexer lexer{std::move(line)};
       Parser parser{lexer.tokenize()};
-      block->append(parser.interpret());
-      block->exec(visitor).print();
+      auto result = parser.interpret();
+      result->exec(visitor).print();
+      block->append(std::move(result));
     }
   }
   if (argc == 2) {

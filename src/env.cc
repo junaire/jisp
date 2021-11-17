@@ -18,6 +18,7 @@ ASTNode* Env::get(const std::string& name) {
   if (result != environment.end()) {
     return result->second;
   }
+  fmt::print("Unbound symbol {}\n", name);
   assert(false);
   return nullptr;
   // TODO(Jun): If we can't find the symbol, we should throw an error:
