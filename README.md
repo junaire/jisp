@@ -48,7 +48,7 @@ Or you can execute a jisp file by typing `jisp file.jun`.
 
 ## Language Syntax
 
-### Variable Declara:wqtion
+### Variable Declaration
 
 Jisp is a dynamic type language, you can change the type of a variable at runtime.
 
