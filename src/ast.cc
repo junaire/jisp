@@ -132,7 +132,7 @@ Value Literal::exec(Visitor& visitor) { return visitor.visit(this); }
 
 void Literal::dump(int indent) const {
   insertIndent(indent);
-  fmt::print("Literal: {}\n", value_.toString());
+  fmt::print("Literal: \"{}\"\n", value_.toString());
 }
 
 void Builtin::dump(int indent) const {
