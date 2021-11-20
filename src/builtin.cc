@@ -10,9 +10,10 @@
 
 Value Add::apply(Visitor& visitor, std::vector<ASTNode*>& args) {
   assert(!args.empty());
-  int res = 0;
-  for (const auto& arg : args) {
-    res += arg->exec(visitor).toNumber();
+  auto beg = args.begin();
+  Value res = (*beg++)->exec(visitor);
+  for (; beg != args.cend(); beg++) {
+    res = res + (*beg)->exec(visitor);
   }
   return Value(res);
 }
@@ -20,9 +21,9 @@ Value Add::apply(Visitor& visitor, std::vector<ASTNode*>& args) {
 Value Sub::apply(Visitor& visitor, std::vector<ASTNode*>& args) {
   assert(!args.empty());
   auto beg = args.begin();
-  int res = (*beg++)->exec(visitor).toNumber();
+  Value res = (*beg++)->exec(visitor);
   for (; beg != args.cend(); beg++) {
-    res -= (*beg)->exec(visitor).toNumber();
+    res = res - (*beg)->exec(visitor);
   }
   return Value(res);
 }

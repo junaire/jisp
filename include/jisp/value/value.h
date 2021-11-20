@@ -3,8 +3,16 @@
 
 #include <fmt/format.h>
 
+#include <cassert>
+#include <concepts>
 #include <string>
+#include <type_traits>
 #include <variant>
+
+class Value;
+
+template <typename T>
+concept ValueConcept = std::is_same_v<T, Value>;
 
 class Value {
   using JispValue = std::variant<int, std::string, bool, std::nullptr_t>;
@@ -30,10 +38,6 @@ class Value {
     return std::get<int>(val_);
   }
 
-  [[nodiscard]] std::string toString() const {
-    return std::get<std::string>(val_);
-  }
-
   [[nodiscard]] bool toBoolean() const {
     if (isNumber()) {
       return static_cast<bool>(std::get<int>(val_));
@@ -42,6 +46,19 @@ class Value {
       return static_cast<bool>(!std::get<std::string>(val_).empty());
     }
     return std::get<bool>(val_);
+  }
+
+  std::string toString() {
+    if (isString()) {
+      return std::get<std::string>(val_);
+    }
+    if (isBool()) {
+      return std::get<bool>(val_) ? "true" : "false";
+    }
+    if (isNumber()) {
+      return std::to_string(std::get<int>(val_));
+    }
+    return "";
   }
 
   void print() {
@@ -64,17 +81,24 @@ class Value {
   // need to expand
   void reset(JispValue val) { val_ = std::move(val); }
 
-  std::string toString() {
-    if (isString()) {
-      return std::get<std::string>(val_);
+  Value operator+(ValueConcept auto&& other) {
+    if (isNumber() && other.isNumber()) {
+      return Value(toNumber() + other.toNumber());
     }
-    if (isBool()) {
-      return std::get<bool>(val_) ? "true" : "false";
+    if (isString() || other.isString()) {
+      return Value(toString().append(other.toString()));
     }
-    if (isNumber()) {
-      return std::to_string(std::get<int>(val_));
+
+    assert(false);
+  }
+
+  // TODO(Jun): support minus operation between strings
+  Value operator-(ValueConcept auto&& other) {
+    if (isNumber() && other.isNumber()) {
+      return Value(toNumber() - other.toNumber());
     }
-    return "";
+
+    assert(false);
   }
 
  private:
