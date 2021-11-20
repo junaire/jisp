@@ -22,4 +22,5 @@ target_link_libraries(
 	jisp
 	PRIVATE
 	fmt::fmt
+	gflags::gflags
 )

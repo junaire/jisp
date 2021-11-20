@@ -18,6 +18,8 @@ add_subdirectory(third-party/google-test)
 
 add_subdirectory(third-party/fmt)
 
+add_subdirectory(third-party/gflags)
+
 add_subdirectory(src)
 
 enable_testing()

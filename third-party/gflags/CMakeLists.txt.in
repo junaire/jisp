@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(gflags NONE)
+
+include(ExternalProject)
+
+ExternalProject_Add(gflags
+  URL               https://github.com/gflags/gflags/archive/refs/tags/v2.2.2.tar.gz
+  SOURCE_DIR        "${CMAKE_CURRENT_BINARY_DIR}/gflags-src"
+  BINARY_DIR        "${CMAKE_CURRENT_BINARY_DIR}/gflags-build"
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND     ""
+  INSTALL_COMMAND   ""
+  TEST_COMMAND      ""
+)

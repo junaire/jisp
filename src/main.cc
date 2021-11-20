@@ -1,4 +1,5 @@
 #include <fmt/format.h>
+#include <gflags/gflags.h>
 
 #include <fstream>
 #include <iostream>
@@ -11,6 +12,8 @@
 #include "jisp/env.h"
 #include "jisp/lexer/lexer.h"
 #include "jisp/parser/parser.h"
+
+DEFINE_bool(astdump, false, "dump AST in stdout");
 
 void banner() {
   fmt::print("Jun's own Lisp\n");
@@ -33,6 +36,9 @@ bool checkFileExtension(std::string_view name) {
 }
 
 int main(int argc, char** argv) {
+  gflags::SetVersionString("v0.1.0");
+  gflags::SetUsageMessage(" ");
+  gflags::ParseCommandLineFlags(&argc, &argv, true);
   if (argc == 1) {
     banner();
 
@@ -57,6 +63,10 @@ int main(int argc, char** argv) {
 
       auto result = parser.interpret();
 
+      if (FLAGS_astdump) {
+        result->dump(0);
+      }
+
       funcTbl.merge(parser.getFuncTbl());
 
       result->exec(visitor).print();
@@ -77,9 +87,15 @@ int main(int argc, char** argv) {
     Lexer lexer{readFile(file)};
     Parser parser{lexer.tokenize()};
 
-    parser.parse()->exec(visitor).print();
+    auto result = parser.parse();
+    if (FLAGS_astdump) {
+      result->dump(0);
+    }
+
+    result->exec(visitor).print();
 
   } else {
     fmt::print("Error arguments\n");
   }
+  gflags::ShutDownCommandLineFlags();
 }
