@@ -17,6 +17,12 @@ class Parser {
   std::unique_ptr<ASTNode> parse();
   std::unique_ptr<ASTNode> interpret();
 
+  void setFuncTbl(const std::unordered_set<std::string>& tbl) {
+    funcTbl = tbl;
+  };
+
+  std::unordered_set<std::string> getFuncTbl() { return funcTbl; }
+
  private:
   std::unique_ptr<ASTNode> parseNode();
 

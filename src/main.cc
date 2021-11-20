@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <string_view>
+#include <unordered_set>
 
 #include "jisp/ast/ast.h"
 #include "jisp/ast/builtin.h"
@@ -37,6 +38,7 @@ int main(int argc, char** argv) {
 
     Visitor visitor;
     auto block = std::make_unique<Block>();
+    std::unordered_set<std::string> funcTbl;
 
     while (true) {
       std::string line;
@@ -48,7 +50,15 @@ int main(int argc, char** argv) {
 
       Lexer lexer{std::move(line)};
       Parser parser{lexer.tokenize()};
+
+      // Because Parser got destroyed at every loop's end,
+      // so we have to store function name table outside
+      parser.setFuncTbl(funcTbl);
+
       auto result = parser.interpret();
+
+      funcTbl.merge(parser.getFuncTbl());
+
       result->exec(visitor).print();
       block->append(std::move(result));
     }
