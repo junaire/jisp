@@ -27,27 +27,27 @@ Value Visitor::visit(BinaryExpression* node) {
   return node->op_->apply(*this, args);
 }
 
-// TODO(Jun): How to deal with functions?
 Value Visitor::visit(Function* node) {
   auto fnName = node->id_->toIdentifier()->name();
-  env->set(fnName, node);
+  set(fnName, node);
   return Value(fnName);
 }
 
 Value Visitor::visit(CallExpression* node) {
-  Visitor localVisitor{env};
+  Visitor localVisitor;
+  localVisitor.setParent(*this);
 
-  auto* fn = env->get(node->callee_->toIdentifier()->name())->toFunction();
+  auto* fn = get(node->callee_->toIdentifier()->name())->toFunction();
 
   for (int i = 0; i < fn->params_->toList()->size(); i++) {
-    localVisitor.env->set(fn->params_->toList()->at(i)->toIdentifier()->name(),
-                          node->arguments_->toBlock()->at(i));
+    localVisitor.set(fn->params_->toList()->at(i)->toIdentifier()->name(),
+                     node->arguments_->toBlock()->at(i));
   }
   return localVisitor.visit(fn->body_->toBlock());
 }
 
 Value Visitor::visit(Identifier* node) {
-  auto* id = env->get(node->toIdentifier()->name());
+  auto* id = get(node->toIdentifier()->name());
   return id->exec(*this);
 }
 
@@ -69,7 +69,7 @@ Value Visitor::visit(WhileExpression* node) {
 
 Value Visitor::visit(Declaration* node) {
   auto var = node->id_->toIdentifier()->name_;
-  this->env->set(var, node->init_.get());
+  set(var, node->init_.get());
   return Value(var);
 }
 

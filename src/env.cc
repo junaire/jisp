@@ -8,19 +8,18 @@ void Env::set(const std::string& name, ASTNode* val) {
 }
 
 ASTNode* Env::get(const std::string& name) {
+  auto result = environment.find(name);
+  if (result != environment.end()) {
+    return result->second;
+  }
   if (parent != nullptr) {
     if (auto* res = parent->get(name)) {
       return res;
     }
   }
 
-  auto result = environment.find(name);
-  if (result != environment.end()) {
-    return result->second;
-  }
   fmt::print("Unbound symbol {}\n", name);
   assert(false);
-  return nullptr;
   // TODO(Jun): If we can't find the symbol, we should throw an error:
   // Unbound symbol
 }

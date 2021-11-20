@@ -42,7 +42,7 @@ class Parser {
 
   [[nodiscard]] bool isCallExpr() const;
 
-  const Token& currentToken() const;
+  [[nodiscard]] const Token& currentToken() const;
 
   void advance();
 

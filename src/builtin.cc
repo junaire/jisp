@@ -133,7 +133,7 @@ Value AddAssign::apply(Visitor& visitor, std::vector<ASTNode*>& args) {
   auto res =
       args[0]->exec(visitor).toNumber() + args[1]->exec(visitor).toNumber();
 
-  visitor.env->get(lhs->toIdentifier()->name())->toLiteral()->reset(Value(res));
+  visitor.get(lhs->toIdentifier()->name())->toLiteral()->reset(Value(res));
 
   return Value();
 }
@@ -144,7 +144,7 @@ Value SubAssign::apply(Visitor& visitor, std::vector<ASTNode*>& args) {
   auto* lhs = args[0];
   auto res =
       args[0]->exec(visitor).toNumber() - args[1]->exec(visitor).toNumber();
-  visitor.env->get(lhs->toIdentifier()->name())->toLiteral()->reset(Value(res));
+  visitor.get(lhs->toIdentifier()->name())->toLiteral()->reset(Value(res));
 
   return Value();
 }
@@ -154,7 +154,7 @@ Value MultiplyAssgin::apply(Visitor& visitor, std::vector<ASTNode*>& args) {
   auto* lhs = args[0];
   auto res =
       args[0]->exec(visitor).toNumber() * args[1]->exec(visitor).toNumber();
-  visitor.env->get(lhs->toIdentifier()->name())->toLiteral()->reset(Value(res));
+  visitor.get(lhs->toIdentifier()->name())->toLiteral()->reset(Value(res));
 
   return Value();
 }
@@ -164,7 +164,7 @@ Value DivideAssign::apply(Visitor& visitor, std::vector<ASTNode*>& args) {
   auto* lhs = args[0];
   auto res =
       args[0]->exec(visitor).toNumber() / args[1]->exec(visitor).toNumber();
-  visitor.env->get(lhs->toIdentifier()->name())->toLiteral()->reset(Value(res));
+  visitor.get(lhs->toIdentifier()->name())->toLiteral()->reset(Value(res));
 
   return Value();
 }

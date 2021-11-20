@@ -35,8 +35,7 @@ int main(int argc, char** argv) {
   if (argc == 1) {
     banner();
 
-    auto globalEnv = std::make_unique<Env>(nullptr);
-    Visitor visitor{globalEnv.get()};
+    Visitor visitor;
     auto block = std::make_unique<Block>();
 
     while (true) {
@@ -63,8 +62,7 @@ int main(int argc, char** argv) {
       return -1;
     }
 
-    auto globalEnv = std::make_unique<Env>(nullptr);
-    Visitor visitor{globalEnv.get()};
+    Visitor visitor;
 
     Lexer lexer{readFile(file)};
     Parser parser{lexer.tokenize()};

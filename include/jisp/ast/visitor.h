@@ -20,7 +20,7 @@ class CallExpression;
 
 class Visitor {
  public:
-  explicit Visitor(Env* en) : env(en) {}
+  Visitor() : env(std::make_unique<Env>()) {}
 
   Value visit(Literal* node);
   Value visit(List* node);
@@ -33,6 +33,15 @@ class Visitor {
   Value visit(Identifier* node);
   Value visit(Declaration* node);
 
-  Env* env;
+  void set(const std::string& name, ASTNode* val) { env->set(name, val); }
+
+  ASTNode* get(const std::string& name) { return env->get(name); }
+
+  void setParent(const Visitor& parent) { env->setParent(parent.getEnv()); }
+
+  [[nodiscard]] Env* getEnv() const { return env.get(); }
+
+ private:
+  std::unique_ptr<Env> env;
 };
 #endif

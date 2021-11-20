@@ -46,57 +46,48 @@ std::string interpret(const std::string& input, Visitor& visitor) {
 }
 
 TEST(ParserTest, EchoBack) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+  Visitor visitor;
   EXPECT_EQ("42", interpret("42", visitor));
   EXPECT_EQ("Hello", interpret("\"Hello\"", visitor));
 }
 
 TEST(ParserTest, SimpleAddition) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+  Visitor visitor;
 
   EXPECT_EQ("42", interpret("(+ 40 2)  ", visitor));
 }
 
 TEST(ParserTest, SimpleSubtraction) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+  Visitor visitor;
 
   EXPECT_EQ("42", interpret("(- 48 6)", visitor));
 }
 
 TEST(ParserTest, SimpleMultiplication) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
-
+  Visitor visitor;
   EXPECT_EQ("42", interpret("(* 6 7)", visitor));
 }
 
 TEST(ParserTest, SimpleDivision) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+  Visitor visitor;
 
   EXPECT_EQ("42", interpret("(/ 336 8)", visitor));
 }
 
 TEST(ParserTest, DefinSymbol) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+  Visitor visitor;
   EXPECT_EQ("42", interpret("(def x 42) (x)", visitor));
 }
 
 TEST(ParserTest, Function) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+  Visitor visitor;
   EXPECT_EQ("42",
             interpret("(fn func [x] ( if (x) ( + x 1) ( * x 5))) (func (41))",
                       visitor));
 }
 
 TEST(ConditionTest, IfExpression) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+  Visitor visitor;
   EXPECT_EQ("42", interpret("(if (1) (42) (24))", visitor));
   EXPECT_EQ("42", interpret("(if (0) (24) (42))", visitor));
   EXPECT_EQ("42",
@@ -104,11 +95,15 @@ TEST(ConditionTest, IfExpression) {
 }
 
 TEST(LoopTest, WhileExpression) {
-  auto env = std::make_unique<Env>(nullptr);
-  auto visitor = Visitor(env.get());
+  Visitor visitor;
   EXPECT_EQ(
       "42",
       interpret(
           "(def x 1) (def y 22) ( while ( <= x 10) ( ( += x 1) ( += y 2) y))",
           visitor));
+}
+
+TEST(ScopeTest, ParentScopeVariable) {
+  Visitor visitor;
+  EXPECT_EQ("42", interpret("(def x 42) (fn func [] (x) ) (func())", visitor));
 }
