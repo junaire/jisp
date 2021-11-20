@@ -14,7 +14,7 @@ class Builtin : public ASTNode {
  public:
   // FIXME: I don't like vector in function argument
   virtual Value apply(Visitor& visitor, std::vector<ASTNode*>& args) = 0;
-  [[maybe_unused]] void dump() const final { fmt::print("Builtin"); };
+  void dump(int indent) const final;
   [[maybe_unused]] Value exec(Visitor& visitor) final { return Value(); }
 };
 

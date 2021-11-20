@@ -28,7 +28,7 @@ ASTNode* Env::get(const std::string& name) {
 void Env::dump() {
   for (const auto& ele : environment) {
     fmt::print("{} => ", ele.first);
-    ele.second->dump();
+    ele.second->dump(0);
   }
 }
 

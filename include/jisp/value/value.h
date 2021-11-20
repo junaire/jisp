@@ -48,7 +48,7 @@ class Value {
     return std::get<bool>(val_);
   }
 
-  std::string toString() {
+  [[nodiscard]] std::string toString() const {
     if (isString()) {
       return std::get<std::string>(val_);
     }

@@ -24,7 +24,7 @@ class ASTNode {
   ASTNode() = default;
 
   virtual Value exec(Visitor& visitor) = 0;
-  virtual void dump() const = 0;
+  virtual void dump(int indent) const = 0;
 
   Identifier* toIdentifier();
   CallExpression* toCallExpression();
@@ -53,7 +53,7 @@ class Identifier : public ASTNode {
  public:
   explicit Identifier(std::string name) : name_(std::move(name)) {}
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
 
   [[nodiscard]] const std::string& name() const { return name_; }
@@ -83,7 +83,7 @@ class List : public ASTNode {
     return node;
   }
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
 
  private:
@@ -96,7 +96,7 @@ class Literal : public ASTNode {
  public:
   explicit Literal(auto&& value) : value_(std::move(value)) {}
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
 
   void reset(Value value) { value_ = std::move(value); }
@@ -126,7 +126,7 @@ class Block : public ASTNode {
     return node;
   }
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
 
  private:
@@ -142,7 +142,7 @@ class BinaryExpression : public ASTNode {
       : op_(std::move(op)), lhs_(std::move(lhs)), rhs_(std::move(rhs)) {}
 
   Value exec(Visitor& visitor) override;
-  void dump() const override;
+  void dump(int indent) const override;
 
  private:
   std::unique_ptr<Builtin> op_;
@@ -158,7 +158,7 @@ class CallExpression : public ASTNode {
                  std::unique_ptr<ASTNode> arguments)
       : callee_(std::move(callee)), arguments_(std::move(arguments)) {}
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
 
  private:
@@ -173,7 +173,7 @@ class Declaration : public ASTNode {
   Declaration(std::unique_ptr<ASTNode> id, std::unique_ptr<ASTNode> init)
       : id_(std::move(id)), init_(std::move(init)) {}
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
 
  private:
@@ -191,8 +191,9 @@ class Function : public ASTNode {
         params_(std::move(params)),
         body_(std::move(body)) {}
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
+  static bool isBuiltin() { return false; }
 
  private:
   std::unique_ptr<ASTNode> id_;
@@ -211,7 +212,7 @@ class IfExpression : public ASTNode {
         consequent_(std::move(consequent)),
         alternate_(std::move(alternate)){};
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
 
  private:
@@ -227,7 +228,7 @@ class WhileExpression : public ASTNode {
   WhileExpression(std::unique_ptr<ASTNode> test, std::unique_ptr<ASTNode> body)
       : test_(std::move(test)), body_(std::move(body)) {}
 
-  void dump() const override;
+  void dump(int indent) const override;
   Value exec(Visitor& visitor) override;
 
  private:
