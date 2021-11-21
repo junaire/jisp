@@ -24,3 +24,5 @@ target_link_libraries(
 	fmt::fmt
 	gflags::gflags
 )
+install (TARGETS jisp
+    DESTINATION /usr/local/bin)

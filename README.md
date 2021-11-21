@@ -30,7 +30,7 @@ make
 ### Install
 
 ```bash
-make install # This install jisp in your system
+sudo make install # This install jisp in your system
 ```
 
 ### Test
