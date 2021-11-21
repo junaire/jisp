@@ -33,8 +33,7 @@ make
 sudo make install # This install jisp in your system
 ```
 
-
-Test
+### Test
 
 ```bash
 make test
