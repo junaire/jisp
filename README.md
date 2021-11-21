@@ -32,19 +32,9 @@ make
 ```bash
 sudo make install # This install jisp in your system
 ```
-If your system is Mac os Montery
 
-You need 
 
-```
-# csrutil disable   
-$ xcode-select --install    
-$ cd /Library/Developer/CommandLineTools/Packages/  # whit your path
-$ open macOS_headers_for_macOS_10.14.pkg
-$ sudo DevToolsSecurity -enable 
-```
-
-### Test
+Test
 
 ```bash
 make test
