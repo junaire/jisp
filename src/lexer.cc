@@ -146,7 +146,7 @@ Token Lexer::op() {
     return Token(Token::Kind::Equal, std::move(value));
   }
   if (value == "!=") {
-    return Token(Token::Kind::Equal, std::move(value));
+    return Token(Token::Kind::NotEqual, std::move(value));
   }
   if (value == "+=") {
     return Token(Token::Kind::PlusAssgin, std::move(value));
@@ -259,6 +259,7 @@ Token Lexer::next() {
     case '/':
     case '|':
     case '&':
+    case '!':
       return op();
     case '(':
       return atom(Token::Kind::LeftParen);

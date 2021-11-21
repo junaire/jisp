@@ -107,3 +107,27 @@ TEST(ScopeTest, ParentScopeVariable) {
   Visitor visitor;
   EXPECT_EQ("42", interpret("(def x 42) (fn func [] (x) ) (func())", visitor));
 }
+
+TEST(OperatorTest, Equal) {
+  Visitor visitor;
+  EXPECT_EQ("true", interpret("(== 42 42)", visitor));
+  EXPECT_EQ("false", interpret("(== 42 41)", visitor));
+}
+
+TEST(OperatorTest, NotEqual) {
+  Visitor visitor;
+  EXPECT_EQ("false", interpret("(!= 42 42)", visitor));
+  EXPECT_EQ("true", interpret("(!= 43 42)", visitor));
+}
+
+TEST(OperatorTest, And) {
+  Visitor visitor;
+  EXPECT_EQ("true", interpret("(&& 42  42)", visitor));
+  EXPECT_EQ("false", interpret("(&& 0  1)  ", visitor));
+}
+
+TEST(OperatorTest, Or) {
+  Visitor visitor;
+  EXPECT_EQ("true", interpret("(|| 42  0)", visitor));
+  EXPECT_EQ("false", interpret("(|| 0  0)", visitor));
+}
