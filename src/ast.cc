@@ -137,6 +137,5 @@ void Literal::dump(int indent) const {
 
 void Builtin::dump(int indent) const {
   insertIndent(indent);
-  // FIXME: We can't know what kind of builtin operators it is...
-  fmt::print("Builtin\n");
+  fmt::print("{}\n", type());
 }
